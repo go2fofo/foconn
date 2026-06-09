@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Arc, Mutex};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
-use tauri::{AppHandle, Emitter, LogicalSize, Manager, State, WebviewWindow};
+use tauri::{AppHandle, Emitter, LogicalSize, Manager, State, WebviewWindow,Runtime};
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
@@ -1488,6 +1488,23 @@ async fn write_term_stream(
     }
 }
 
+/// 智能控制/打开开发者工具的后端 Command
+#[tauri::command]
+async fn toggle_devtools<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
+    // 获取当前应用的主窗口实例（通常默认叫 "main"）
+    if let Some(window) = app.get_webview_window("main") {
+        // 智能判定：如果已经打开了就关闭它，没打开则强行唤醒
+        if window.is_devtools_open() {
+            window.close_devtools();
+        } else {
+            window.open_devtools();
+        }
+        Ok(())
+    } else {
+        Err("未能获取到 Foconn 主窗口句柄".to_string())
+    }
+}
+
 #[tauri::command]
 async fn resize_term_stream(
     state: State<'_, AppState>,
@@ -1976,7 +1993,8 @@ pub fn run() {
             vfs_delete_nodes,
             vfs_create_dir,
             vfs_get_transfer_tasks,
-            vfs_control_task
+            vfs_control_task,
+            toggle_devtools
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

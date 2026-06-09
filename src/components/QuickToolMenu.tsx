@@ -1,9 +1,9 @@
-import { Bookmark, Eye, EyeOff, Home, RotateCcw, Search, TerminalSquare, type LucideIcon } from 'lucide-react';
+import { Bookmark, Eye, EyeOff, Home, RotateCcw, Search, TerminalSquare, Wrench, type LucideIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-export type QuickToolMenuIcon = 'search' | 'terminal' | 'bookmark' | 'home' | 'reset' | 'eye' | 'eye_off';
+export type QuickToolMenuIcon = 'search' | 'terminal' | 'bookmark' | 'home' | 'reset' | 'eye' | 'eye_off' | 'tools' | 'hide';
 
 export interface QuickToolMenuItem {
   id: string;
@@ -29,6 +29,8 @@ const MENU_ICON_MAP: Record<QuickToolMenuIcon, LucideIcon> = {
   reset: RotateCcw,
   eye: Eye,
   eye_off: EyeOff,
+  tools: Wrench,
+  hide: EyeOff,
 };
 
 function getMenuPosition(anchor: { x: number; y: number }, itemCount: number) {

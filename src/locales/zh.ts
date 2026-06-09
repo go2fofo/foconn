@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:50:06
- * @LastEditTime: 2026-06-09 11:01:18
+ * @LastEditTime: 2026-06-09 13:35:19
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/locales/zh.ts
@@ -35,6 +35,7 @@ export const zh = {
       reset_position: "重置工具球位置",
       hide_ball: "隐藏悬浮球",
       show_ball: "显示悬浮球",
+      open_dev_tools: "打开开发者工具",
       drag_hint: "长按{{count}}秒进行拖拽",
       drag_countdown: "继续按住 {{seconds}} 秒后进入拖拽",
       menu_hint: "左键打开主入口，右键呼出快捷菜单，长按{{count}}秒后可拖拽工具球",
