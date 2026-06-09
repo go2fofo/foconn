@@ -103,12 +103,6 @@ export function WorkspaceLayout() {
           action: () => setIsBookmarkSidebarOpen(true),
         },
       );
-
-      console.log(
-        `🔍 [WorkspaceLayout:106] %c isFloatingBallHidden: `,
-        "font-size:14px; background:#26A08F; color:#fff;font-weight: bold;",
-        isFloatingBallHidden,
-      );
       if (isFloatingBallHidden) {
         baseItems.push({
           id: "show-floating-ball",
