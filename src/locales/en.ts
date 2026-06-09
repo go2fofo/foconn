@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:49:58
- * @LastEditTime: 2026-06-09 13:41:07
+ * @LastEditTime: 2026-06-09 13:42:44
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/locales/en.ts
@@ -36,9 +36,9 @@ export const en = {
       hide_ball: "Hide Floating Ball",
       show_ball: "Show Floating Ball",
       open_dev_tools: "Open Developer Tools",
-      drag_hint: "Long press for three seconds to drag",
+      drag_hint: "Long press for {{count}} seconds to drag",
       drag_countdown: "Keep holding for {{seconds}}s to drag",
-      menu_hint: "Left click opens the main entry, right click opens quick actions, and long press for three seconds to drag",
+      menu_hint: "Left click opens the main entry, right click opens quick actions, and long press for {{count}} seconds to drag",
     },
     home: {
       dashboard: "Dashboard",
