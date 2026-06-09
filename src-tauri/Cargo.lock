@@ -3,6 +3,21 @@
 version = 4
 
 [[package]]
+name = "Foconn"
+version = "0.1.0"
+dependencies = [
+ "portable-pty",
+ "serde",
+ "serde_json",
+ "ssh2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3544,21 +3559,6 @@ dependencies = [
  "webview2-com",
  "window-vibrancy",
  "windows",
-]
-
-[[package]]
-name = "tauri-app"
-version = "0.1.0"
-dependencies = [
- "portable-pty",
- "serde",
- "serde_json",
- "ssh2",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
- "tokio",
- "uuid",
 ]
 
 [[package]]
