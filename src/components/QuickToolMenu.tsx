@@ -121,7 +121,7 @@ export function QuickToolMenu({ isOpen, anchor, items, onClose }: QuickToolMenuP
         );
       })}
       <div className="px-3 pb-2 pt-1 text-[11px] text-[var(--app-text-soft)]">
-        {t('floating_ball.menu_hint')}
+        {t('floating_ball.menu_hint', { count: 1 })}
       </div>
     </div>,
     document.body,
