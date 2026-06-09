@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:50:06
- * @LastEditTime: 2026-06-09 14:28:22
+ * @LastEditTime: 2026-06-09 14:58:03
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/locales/zh.ts
@@ -128,8 +128,8 @@ export const zh = {
       password: "密码",
       keypair: "密钥",
       password_placeholder: "请输入密码",
-      show_password: "显示明文",
-      hide_password: "隐藏明文",
+      show_password: "点击显示",
+      hide_password: "点击隐藏",
       keypair_placeholder: "请选择或填写密钥文件路径",
       title_placeholder: "未填写时默认显示主机地址",
       username_placeholder: "root",

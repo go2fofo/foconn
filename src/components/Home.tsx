@@ -3,6 +3,7 @@ import type { QuickConnectProtocol, SshSessionConfig } from "../types";
 import { useMemo } from "react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { SshConnectionForm } from "./SshConnectionForm";
+import { Bug } from "lucide-react";
 
 interface HomeProps {
   onOpenLocal: () => void;
@@ -53,7 +54,7 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
     >
       <div className="mx-auto flex h-full w-full flex-col gap-6 2xl:max-w-[1680px]">
         {/*  第一核心区：中枢操纵台 (Command & Form Hub) */}
-     <section className="shrink-0 grid gap-6 lg:grid-cols-[380px_1fr] xl:grid-cols-[440px_1fr]">
+        <section className="shrink-0 grid gap-6 lg:grid-cols-[380px_1fr] xl:grid-cols-[440px_1fr]">
           {/* 🛰️ 左侧控制舱：多维中枢监视器（纯中文硬核版） */}
           <div className="flex flex-col justify-between rounded-[24px] border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900/95 to-slate-950 p-6 xl:p-8 shadow-[0_25px_50px_-12px_rgba(3,7,18,0.6)] backdrop-blur-xl relative overflow-hidden group">
             {/* 后景全息科技微光 */}
@@ -77,8 +78,12 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
             {/* 🌟 核心填充：硬核工控状态监视板（已全面汉化） */}
             <div className="my-6 relative z-10 rounded-xl border border-slate-900 bg-slate-950/60 p-4 font-mono text-[11px] text-slate-500 space-y-3 shadow-inner">
               <div className="flex items-center justify-between border-b border-slate-900/60 pb-2">
-                <span className="text-slate-400 font-sans font-medium">系统核心运行状态</span>
-                <span className="text-emerald-400 text-[10px] animate-pulse">● 运行稳定</span>
+                <span className="text-slate-400 font-sans font-medium">
+                  系统核心运行状态
+                </span>
+                <span className="text-emerald-400 text-[10px] animate-pulse">
+                  ● 运行稳定
+                </span>
               </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between">
@@ -87,7 +92,11 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                 </div>
                 <div className="flex justify-between">
                   <span>当前活跃会话</span>
-                  <span className="text-cyan-400 font-sans">{history.length > 0 ? `${history.length} 个通道` : '暂无活跃'}</span>
+                  <span className="text-cyan-400 font-sans">
+                    {history.length > 0
+                      ? `${history.length} 个通道`
+                      : "暂无活跃"}
+                  </span>
                 </div>
                 {/* 动态仿真负载条 */}
                 <div className="pt-1">
@@ -111,22 +120,29 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                 className="w-full flex items-center justify-between rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-500 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-cyan-950/30 transition-all duration-300 hover:opacity-95 hover:shadow-cyan-500/20 active:scale-[0.99]"
               >
                 <span className="tracking-wide">{t("home.open_local")}</span>
-                <span className="text-[10px] font-sans opacity-80 bg-black/10 px-2 py-0.5 rounded-md">⚡ 启动</span>
+                <span className="text-[10px] font-sans opacity-80 bg-black/10 px-2 py-0.5 rounded-md">
+                  启动
+                </span>
               </button>
 
               {/* 辅助快捷操作：唤醒后端控制台的开发者模式指令 */}
               <button
                 type="button"
                 onClick={async () => {
-                  const { invoke } = await import('@tauri-apps/api/core');
-                  invoke('toggle_devtools').catch(() => {});
+                  const { invoke } = await import("@tauri-apps/api/core");
+                  invoke("toggle_devtools").catch(() => {});
                 }}
                 className="w-full flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/20 hover:bg-slate-900/40 px-5 py-3 text-xs text-slate-400 font-medium transition-all duration-200 active:scale-[0.99]"
               >
                 <span className="font-sans flex items-center gap-1.5">
-                  <span className="text-amber-500/80">🛠️</span> 调试内核控制台
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)] group-hover:bg-emerald-500/20 group-hover:text-emerald-300 group-hover:border-emerald-500/40 transition-all duration-300">
+                    <Bug className="h-3.5 w-3.5 stroke-[2.5] animate-pulse" />
+                  </span>
+                  调试内核控制台
                 </span>
-                <span className="font-sans text-[10px] text-slate-600 group-hover:text-slate-400 transition-colors">切换面板</span>
+                <span className="font-sans text-[10px] text-slate-600 group-hover:text-slate-400 transition-colors">
+                  切换面板
+                </span>
               </button>
             </div>
           </div>
@@ -142,7 +158,7 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
           </div>
         </section>
 
-   {/* 🎛️ 第二核心区：全宽网格控制台（占满整整一行，纯中文极客版） */}
+        {/* 🎛️ 第二核心区：全宽网格控制台（占满整整一行，纯中文极客版） */}
         <section className="w-full min-h-0 flex-1">
           <div className="flex h-full flex-col rounded-[24px] border border-slate-800/70 bg-gradient-to-b from-slate-950/60 to-slate-950/20 p-6 shadow-2xl backdrop-blur-md">
             {/* 节点区首标题与状态计数 */}
