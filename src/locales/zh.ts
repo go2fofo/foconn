@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:50:06
- * @LastEditTime: 2026-06-09 13:35:19
+ * @LastEditTime: 2026-06-09 14:28:22
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/locales/zh.ts
@@ -42,7 +42,7 @@ export const zh = {
     },
     home: {
       dashboard: "仪表盘",
-      new_connection: "新建连接",
+      new_connection: "新建SSH/SFTP连接",
       bookmarks: "书签",
       recent: "最近连接",
       quick_connect: "快速连接",
@@ -52,6 +52,7 @@ export const zh = {
       no_bookmarks: "还没有保存任何书签。",
       no_recent: "还没有最近连接记录。",
       last_opened: "最近打开",
+      cluster_size:"连接数「{{count}}」个",
       shortcut_hint: "提示：按 Ctrl+K 或 Cmd+K 可以快速打开万能面板。",
     },
     menu: {

@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:49:58
- * @LastEditTime: 2026-06-09 13:42:44
+ * @LastEditTime: 2026-06-09 14:28:31
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/locales/en.ts
@@ -45,13 +45,14 @@ export const en = {
       new_connection: "New Connection",
       bookmarks: "Bookmarks",
       recent: "Recent Connections",
-      quick_connect: "Quick Connect",
+      quick_connect: "Quick Connect SSH/SFTP Connection",
       host: "Host",
       connect: "Connect",
       open_local: "Open Local Terminal",
       no_bookmarks: "No bookmarks saved yet.",
       no_recent: "No recent connections.",
       last_opened: "Last opened",
+      cluster_size:"Connection count: {{count}}",
       shortcut_hint: "Tip: Press Ctrl+K or Cmd+K to open the Omnibox.",
     },
     menu: {
