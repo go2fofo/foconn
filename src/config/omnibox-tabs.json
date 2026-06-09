@@ -1,0 +1,26 @@
+{
+  "initialTabByContext": {
+    "dashboard": "bookmarks",
+    "workspace": "bookmarks"
+  },
+  "tabs": [
+    {
+      "id": "bookmarks",
+      "labelKey": "omnibox.tabs.bookmarks.label",
+      "titleKey": "omnibox.tabs.bookmarks.title",
+      "descriptionKey": "omnibox.tabs.bookmarks.description",
+      "view": "BOOKMARKS",
+      "showSearch": true,
+      "showDashboardConnections": true
+    },
+    {
+      "id": "quickCommands",
+      "labelKey": "omnibox.tabs.quickCommands.label",
+      "titleKey": "omnibox.tabs.quickCommands.title",
+      "descriptionKey": "omnibox.tabs.quickCommands.description",
+      "view": "QUICK_COMMANDS",
+      "showSearch": true,
+      "showDashboardConnections": false
+    }
+  ]
+}

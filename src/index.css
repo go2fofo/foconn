@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-primary: #55c7c2;
+  --app-info: #5a8cff;
+  --app-success: #46c4a8;
+  --app-warning: #d3a23a;
+  --app-error: #ef4444;
+  --app-radius: 12px;
+  --app-bg-base: #050505;
+  --app-bg-container: #0c1020;
+  --app-bg-elevated: #0f172a;
+  --app-bg-soft: #111a2f;
+  --app-bg-panel: rgba(12, 16, 32, 0.92);
+  --app-bg-panel-strong: rgba(15, 23, 42, 0.96);
+  --app-bg-input: rgba(15, 23, 42, 0.82);
+  --app-bg-hover: rgba(90, 140, 255, 0.12);
+  --app-bg-hover-strong: rgba(85, 199, 194, 0.12);
+  --app-bg-danger-soft: rgba(239, 68, 68, 0.12);
+  --app-selection-bg: rgba(90, 140, 255, 0.22);
+  --app-border: rgba(90, 140, 255, 0.16);
+  --app-border-strong: rgba(85, 199, 194, 0.24);
+  --app-border-danger: rgba(239, 68, 68, 0.28);
+  --app-text-base: rgba(255, 255, 255, 0.88);
+  --app-text-muted: rgba(255, 255, 255, 0.62);
+  --app-text-soft: rgba(255, 255, 255, 0.42);
+  --app-shadow: 0 24px 80px rgba(3, 6, 16, 0.45);
+  --app-shadow-elevated: 0 32px 120px rgba(3, 6, 16, 0.65);
+  --app-scrollbar-track: rgba(12, 16, 32, 0.72);
+  --app-scrollbar-thumb: linear-gradient(180deg, rgba(90, 140, 255, 0.55), rgba(85, 199, 194, 0.52));
+  --app-scrollbar-thumb-hover: linear-gradient(180deg, rgba(90, 140, 255, 0.78), rgba(85, 199, 194, 0.76));
+  --app-scrollbar-border: rgba(255, 255, 255, 0.05);
+  --app-hero-bg:
+    radial-gradient(circle at top left, rgba(85, 199, 194, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(90, 140, 255, 0.18), transparent 24%),
+    linear-gradient(180deg, #050505 0%, #0c1020 48%, #0f172a 100%);
+  --app-panel-bg: linear-gradient(180deg, rgba(12, 16, 32, 0.96), rgba(15, 23, 42, 0.96));
+  --app-accent-bg: linear-gradient(135deg, #55c7c2 0%, #5a8cff 100%);
+}
+
+html, body, #root {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  background-color: var(--app-bg-base);
+  color: var(--app-text-base);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--app-bg-base);
+  background-image: var(--app-hero-bg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 140, 255, 0.68) rgba(12, 16, 32, 0.38);
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: var(--app-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 2px solid var(--app-scrollbar-border);
+  background: var(--app-scrollbar-thumb);
+  background-clip: padding-box;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--app-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
