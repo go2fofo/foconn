@@ -107,7 +107,7 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
     <div className="grid gap-6 xl:grid-cols-[0.98fr_1.02fr]">
       <div className="space-y-4">
         <div className="rounded-[24px] border border-[var(--app-border)] bg-[var(--app-bg-panel)] p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex gap-3 justify-between items-center mb-4">
             <div className="text-xs uppercase tracking-[0.18em] text-[var(--app-text-soft)]">
               {t('omnibox.quick_commands_overview')}
             </div>
@@ -156,7 +156,7 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
             ) : (
               filteredPresets.map((preset) => (
                 <div key={preset.id} className="rounded-[20px] border border-[var(--app-border)] bg-[var(--app-bg-input)] p-4">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex gap-3 justify-between items-start">
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-white">{preset.title}</div>
                       <div className="mt-1 line-clamp-2 text-xs text-[var(--app-text-muted)]">{preset.description || t('omnibox.no_description')}</div>
@@ -168,7 +168,7 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
                   <div className="mt-3 rounded-[16px] border border-[var(--app-border)] bg-[var(--app-bg-container)] px-4 py-3 font-mono text-xs leading-6 text-[var(--app-text-base)]">
                     {preset.command}
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {preset.tags.length > 0 ? (
                       preset.tags.map((tag) => (
                         <span
@@ -182,7 +182,7 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
                       <span className="text-xs text-[var(--app-text-soft)]">{t('omnibox.no_tags')}</span>
                     )}
                   </div>
-                  <div className="mt-4 flex items-center justify-end gap-2">
+                  <div className="flex gap-2 justify-end items-center mt-4">
                     <button
                       type="button"
                       onClick={() => setQuickCommandEditor(preset)}
@@ -193,9 +193,6 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
                     <button
                       type="button"
                       onClick={() => {
-                        if (!window.confirm(t('omnibox.quick_command_delete_confirm'))) {
-                          return;
-                        }
                         void deleteQuickCommand(preset.id);
                       }}
                       className="rounded-[12px] border border-[var(--app-border-danger)] px-3 py-1.5 text-xs text-[var(--app-error)] transition hover:bg-[var(--app-bg-danger-soft)]"
@@ -279,7 +276,7 @@ export function OmniboxQuickCommandsTab({ keyword }: OmniboxQuickCommandsTabProp
             </label>
           </div>
 
-          <div className="mt-5 flex items-center justify-end gap-3">
+          <div className="flex gap-3 justify-end items-center mt-5">
             <button
               type="button"
               onClick={resetEditor}

@@ -82,11 +82,14 @@ export function WorkspaceLayout() {
   };
 
   const quickToolMenuItems = useMemo<QuickToolMenuItem[]>(() => {
+    console.log(`🔍 [WorkspaceLayout:85] %c 112111: `,'font-size:14px; background:#26A08F; color:#fff;font-weight: bold;', );
     if (!quickToolMenuAnchor) {
       return [];
     }
 
-    const baseItems: QuickToolMenuItem[] = [];
+    const baseItems: QuickToolMenuItem[] = [
+           
+    ];
 
     if (quickToolMenuAnchor.context === "DASHBOARD") {
       baseItems.push(
@@ -121,12 +124,7 @@ export function WorkspaceLayout() {
         icon: "search",
         action: () => setIsOmniboxOpen(true),
       },
-      {
-        id: "go-dashboard",
-        label: t("floating_ball.go_dashboard"),
-        icon: "home",
-        action: () => setActiveTab("dashboard"),
-      },
+
       {
         id: "reset-position",
         label: t("floating_ball.reset_position"),
@@ -201,7 +199,7 @@ export function WorkspaceLayout() {
   return (
     <div className="flex h-full flex-col bg-[var(--app-bg-base)]">
       <div className="flex h-10 shrink-0 items-center border-b border-[var(--app-border)] bg-[var(--app-bg-container)] px-2">
-        <div className="flex min-w-0 flex-1 items-center overflow-x-auto">
+        <div className="flex overflow-x-auto flex-1 items-center min-w-0">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTabId;
             const Icon =
@@ -262,7 +260,7 @@ export function WorkspaceLayout() {
         </div>
       </div>
 
-      <div className="relative flex-1 overflow-hidden">
+      <div className="overflow-hidden relative flex-1">
         {activeTab.protocol === "DASHBOARD" ? (
           <div
             className="h-full"

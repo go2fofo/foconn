@@ -292,7 +292,7 @@ export function Terminal({ session, isActive }: TerminalProps) {
 
       {isQuickPanelOpen ? (
         <div className="absolute inset-x-4 bottom-[64px] z-20 rounded-[20px] border border-[var(--app-border-strong)] bg-[var(--app-bg-container)] p-4 shadow-[var(--app-shadow-elevated)]">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="flex justify-between items-center mb-3">
             <div className="text-xs uppercase tracking-[0.18em] text-[var(--app-info)]">
               {t('terminal_quick_bar.quick_commands')}
             </div>
@@ -311,9 +311,9 @@ export function Terminal({ session, isActive }: TerminalProps) {
                 }}
                 className="rounded-[18px] border border-[var(--app-border)] bg-[var(--app-bg-panel)] px-4 py-3 text-left transition hover:border-[var(--app-border-strong)] hover:bg-[var(--app-bg-hover)]"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex gap-3 justify-between items-start">
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-white">{command.title}</div>
+                    <div className="text-sm font-medium text-white truncate">{command.title}</div>
                     <div className="mt-1 line-clamp-2 text-xs text-[var(--app-text-soft)]">
                       {command.description || command.command}
                     </div>
@@ -332,7 +332,7 @@ export function Terminal({ session, isActive }: TerminalProps) {
       ) : null}
 
       <div className="absolute inset-x-0 bottom-0 z-10 border-t border-[var(--app-border)] bg-[rgba(8,12,20,0.96)] px-4 py-3">
-        <div className="flex items-center gap-3">
+        <div className="flex gap-3 items-center">
           <button
             type="button"
             onClick={() => setIsQuickPanelOpen((current) => !current)}
@@ -348,7 +348,7 @@ export function Terminal({ session, isActive }: TerminalProps) {
           </div>
 
           <form
-            className="flex min-w-0 flex-1 items-center gap-2"
+            className="flex flex-1 gap-2 items-center min-w-0"
             onSubmit={(event) => {
               event.preventDefault();
               void executeCommand(quickInput);

@@ -49,17 +49,17 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
 
   return (
     <div
-      className="h-full overflow-auto px-6 py-6 xl:px-10"
+      className="overflow-auto px-6 py-6 h-full xl:px-10"
       style={{ background: "var(--app-hero-bg)" }}
     >
       <div className="mx-auto flex h-full w-full flex-col gap-6 2xl:max-w-[1680px]">
-        {/*  第一核心区：中枢操纵台 (Command & Form Hub) */}
+        {/*  中枢操纵台 (Command & Form Hub) */}
         <section className="shrink-0 grid gap-6 lg:grid-cols-[380px_1fr] xl:grid-cols-[440px_1fr]">
-          {/* 🛰️ 左侧控制舱：多维中枢监视器（纯中文硬核版） */}
+          {/* 左侧控制舱：多维中枢监视器（纯中文硬核版） */}
           <div className="flex flex-col justify-between rounded-[24px] border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900/95 to-slate-950 p-6 xl:p-8 shadow-[0_25px_50px_-12px_rgba(3,7,18,0.6)] backdrop-blur-xl relative overflow-hidden group">
             {/* 后景全息科技微光 */}
-            <div className="absolute -right-16 -top-16 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/15 transition-all duration-700" />
-            <div className="absolute -left-16 -bottom-16 w-40 h-40 bg-purple-500/5 rounded-full blur-3xl" />
+            <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl transition-all duration-700 bg-cyan-500/10 group-hover:bg-cyan-500/15" />
+            <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full blur-3xl bg-purple-500/5" />
 
             {/* 顶层标题与描述 */}
             <div className="relative z-10">
@@ -70,15 +70,15 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
               <h1 className="mt-5 text-4xl font-mono font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 animate-pulse drop-shadow-[0_0_12px_rgba(34,211,238,0.2)]">
                 &gt; Foconn_
               </h1>
-              <p className="mt-3 text-xs leading-relaxed text-slate-400 font-normal">
+              <p className="mt-3 text-xs font-normal leading-relaxed text-slate-400">
                 {t("home.shortcut_hint")}
               </p>
             </div>
 
             {/* 🌟 核心填充：硬核工控状态监视板（已全面汉化） */}
             <div className="my-6 relative z-10 rounded-xl border border-slate-900 bg-slate-950/60 p-4 font-mono text-[11px] text-slate-500 space-y-3 shadow-inner">
-              <div className="flex items-center justify-between border-b border-slate-900/60 pb-2">
-                <span className="text-slate-400 font-sans font-medium">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-900/60">
+                <span className="font-sans font-medium text-slate-400">
                   系统核心运行状态
                 </span>
                 <span className="text-emerald-400 text-[10px] animate-pulse">
@@ -92,7 +92,7 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                 </div>
                 <div className="flex justify-between">
                   <span>当前活跃会话</span>
-                  <span className="text-cyan-400 font-sans">
+                  <span className="font-sans text-cyan-400">
                     {history.length > 0
                       ? `${history.length} 个通道`
                       : "暂无活跃"}
@@ -104,7 +104,7 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                     <span>数据通道负载缓冲</span>
                     <span>12%</span>
                   </div>
-                  <div className="h-1 w-full bg-slate-900 rounded-full overflow-hidden">
+                  <div className="overflow-hidden w-full h-1 rounded-full bg-slate-900">
                     <div className="h-full w-[12%] bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full" />
                   </div>
                 </div>
@@ -158,13 +158,13 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
           </div>
         </section>
 
-        {/* 🎛️ 第二核心区：全宽网格控制台（占满整整一行，纯中文极客版） */}
-        <section className="w-full min-h-0 flex-1">
+        {/* 全宽网格控制台（占满整整一行，纯中文极客版） */}
+        <section className="flex-1 w-full min-h-0">
           <div className="flex h-full flex-col rounded-[24px] border border-slate-800/70 bg-gradient-to-b from-slate-950/60 to-slate-950/20 p-6 shadow-2xl backdrop-blur-md">
             {/* 节点区首标题与状态计数 */}
-            <div className="mb-5 flex items-center justify-between border-b border-slate-900 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 text-xs border border-cyan-500/20 font-mono">
+            <div className="flex justify-between items-center pb-4 mb-5 border-b border-slate-900">
+              <div className="flex gap-3 items-center">
+                <div className="flex justify-center items-center w-7 h-7 font-mono text-xs text-cyan-400 rounded-lg border bg-cyan-500/10 border-cyan-500/20">
                   &gt;_
                 </div>
                 <div>
@@ -177,7 +177,7 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <span className="h-1.5 w-1.5 rounded-full bg-slate-700" />
                 <span className="text-[10px] font-sans text-slate-400 bg-slate-900/90 border border-slate-800/80 px-2.5 py-1 rounded-md">
                   {t("home.cluster_size", { count: bookmarks.length })}
@@ -185,19 +185,14 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
               </div>
             </div>
 
-            {/* 🌟 核心改动：完美的 4 列全款矩阵自适应网格 */}
-            <div className="min-h-0 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+            <div className="overflow-y-auto flex-1 pr-1 min-h-0 custom-scrollbar">
               {bookmarks.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-800/60 bg-slate-900/10 px-5 py-16 text-center text-xs text-slate-500">
-                  <span className="text-3xl mb-2">📥</span>
+                <div className="flex flex-col justify-center items-center px-5 py-16 text-xs text-center rounded-xl border border-dashed border-slate-800/60 bg-slate-900/10 text-slate-500">
                   {t("home.no_bookmarks")}
-                  <span className="mt-1 text-[11px] text-slate-600 font-sans">
-                    暂无快捷书签，请在上方创建
-                  </span>
                 </div>
               ) : (
                 // 工业级高密度多列布局，完美适配全宽展示
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-2">
+                <div className="grid grid-cols-1 gap-4 pb-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {bookmarks.map((item) => {
                     const isSftp = item.protocol === "SFTP";
                     return (
@@ -222,8 +217,8 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                         <div className="absolute left-0 top-3 bottom-3 w-[2px] bg-cyan-500 rounded-r opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         <div className="pl-1">
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors truncate flex-1">
+                          <div className="flex gap-3 justify-between items-start">
+                            <span className="flex-1 text-sm font-semibold truncate transition-colors text-slate-200 group-hover:text-cyan-400">
                               {item.title || item.host}
                             </span>
                             <span
@@ -237,12 +232,12 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                             </span>
                           </div>
 
-                          <div className="mt-2 flex items-center gap-1 text-xs text-slate-400 font-mono truncate">
+                          <div className="flex gap-1 items-center mt-2 font-mono text-xs truncate text-slate-400">
                             <span className="text-slate-600">
                               {item.username || "root"}
                             </span>
                             <span className="text-slate-500">@</span>
-                            <span className="text-slate-300 truncate">
+                            <span className="truncate text-slate-300">
                               {item.host}
                             </span>
                             {item.port !== 22 && (
@@ -253,9 +248,8 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                           </div>
                         </div>
 
-                        {/* 底部描述区域：统一中文化，保障对齐质感 */}
                         <div className="mt-4 pt-3 border-t border-slate-900/80 flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500 font-sans truncate pr-4 flex-1">
+                          <span className="flex-1 pr-4 font-sans truncate text-slate-500">
                             {item.description || (
                               <span className="font-sans text-slate-700">
                                 暂无节点备注描述

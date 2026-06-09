@@ -79,7 +79,7 @@ export function BookmarkList({
 
   return (
     <div className="rounded-[24px] border border-[var(--app-border)] bg-[var(--app-bg-panel)] p-5">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="flex gap-3 justify-between items-center mb-4">
         <div className="text-xs uppercase tracking-[0.18em] text-[var(--app-text-soft)]">
           {t('omnibox.bookmark_manager')}
         </div>
@@ -102,7 +102,7 @@ export function BookmarkList({
               placeholder={t('omnibox.group_name_placeholder')}
               className="w-full rounded-[16px] border border-[var(--app-border)] bg-[var(--app-bg-container)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--app-primary)]"
             />
-            <div className="mt-3 flex justify-end gap-2">
+            <div className="flex gap-2 justify-end mt-3">
               <button
                 type="button"
                 onClick={() => {
@@ -136,7 +136,7 @@ export function BookmarkList({
               : t('omnibox.delete_group');
           return (
             <div key={group.id} className="rounded-[20px] border border-[var(--app-border)] bg-[var(--app-bg-input)]">
-              <div className="flex items-center gap-3 px-4 py-3">
+              <div className="flex gap-3 items-center px-4 py-3">
                 <button
                   type="button"
                   onClick={() =>
@@ -162,7 +162,7 @@ export function BookmarkList({
                 </button>
 
                 {isEditingGroup ? (
-                  <div className="flex items-center gap-1">
+                  <div className="flex gap-1 items-center">
                     <button
                       type="button"
                       onClick={() => void submitRenameGroup(group.id)}
@@ -182,7 +182,7 @@ export function BookmarkList({
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1">
+                  <div className="flex gap-1 items-center">
                     {!group.is_system ? (
                       <button
                         type="button"
@@ -226,13 +226,13 @@ export function BookmarkList({
                           onDoubleClick={() => onOpen(item)}
                           className="group flex items-center gap-3 rounded-[16px] px-3 py-3 transition hover:bg-[var(--app-bg-hover)]"
                         >
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm text-white">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm text-white truncate">
                               [{item.protocol}] {title}
                               {secondary ? <span className="ml-2 text-xs text-[var(--app-text-muted)]">({secondary})</span> : null}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                          <div className="flex gap-1 items-center opacity-0 transition group-hover:opacity-100">
                             <button
                               type="button"
                               onClick={() => onEdit(item)}
