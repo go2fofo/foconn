@@ -1,3 +1,11 @@
+/*
+ * @Author: fofo
+ * @Date: 2026-06-08 14:02:59
+ * @LastEditTime: 2026-06-10 11:47:02
+ * @LastEditors: fofo
+ * @Description: 升级顶层 Tab 切换为 display 显隐控制，彻底解决切换标签页导致终端重新加载的问题
+ * @FilePath: /foconn/src/components/WorkspaceLayout.tsx
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, X, LayoutGrid, TerminalSquare, Server } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -114,8 +122,6 @@ export function WorkspaceLayout() {
           action: () => updateFloatingBallHidden(false),
         });
       }
-
-      // return baseItems;
     }
     baseItems.push(
       {
@@ -261,66 +267,80 @@ export function WorkspaceLayout() {
       </div>
 
       <div className="overflow-hidden relative flex-1">
-        {activeTab.protocol === "DASHBOARD" ? (
-          <div
-            className="h-full"
-            onContextMenu={(event) => {
-              if (shouldIgnoreDashboardContextMenu(event.target)) {
-                return;
-              }
-              event.preventDefault();
-              event.stopPropagation();
-              openQuickToolMenu(
-                { x: event.clientX, y: event.clientY },
-                "dashboard",
-                "DASHBOARD",
-              );
-            }}
-          >
-            <Home
-              onOpenLocal={openLocalTerminalTab}
-              onOpenProtocolTab={openProtocolTab}
-            />
-          </div>
-        ) : null}
+        {/* 1. 仪表盘保活渲染 */}
+        <div 
+          className="w-full h-full"
+          style={{ display: activeTab.protocol === "DASHBOARD" ? "block" : "none" }}
+          onContextMenu={(event) => {
+            if (shouldIgnoreDashboardContextMenu(event.target)) {
+              return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            openQuickToolMenu(
+              { x: event.clientX, y: event.clientY },
+              "dashboard",
+              "DASHBOARD",
+            );
+          }}
+        >
+          <Home
+            onOpenLocal={openLocalTerminalTab}
+            onOpenProtocolTab={openProtocolTab}
+          />
+        </div>
 
-        {activeTab.protocol === "TERMINAL" && activeTab.session ? (
-          <div className="h-full">
-            <Terminal session={activeTab.session} isActive />
-          </div>
-        ) : null}
+        {/* 2. 遍历渲染所有的独立 Tab 视图，防止多连接以及本地终端相互覆盖 */}
+        {tabs.map((tab:any) => {
+          const isCurrentActive = tab.id === activeTabId;
+          
+          if (tab.protocol === "DASHBOARD") return null;
 
-        {activeTab.connection ? (
-          <div className="h-full">
-            <CrashBoundary
-              area="Remote Workspace"
-              resetKey={`${activeTab.id}:${activeTab.protocol}:${activeTab.connection.activeTab}`}
+          return (
+            <div
+              key={tab.id}
+              className="absolute inset-0 w-full h-full"
+              style={{ display: isCurrentActive ? "block" : "none" }}
             >
-              <ServerView
-                connection={activeTab.connection}
-                onTabChange={(tab) =>
-                  updateServerTabActiveView(activeTab.id, tab)
-                }
-              />
-            </CrashBoundary>
-          </div>
-        ) : null}
+              {/* 本地终端分支 */}
+              {tab.protocol === "TERMINAL" && tab.session ? (
+                <Terminal session={tab.session} isActive={isCurrentActive} />
+              ) : null}
 
-        {!activeTab.connection &&
-        activeTab.protocol !== "DASHBOARD" &&
-        activeTab.protocol !== "TERMINAL" ? (
-          <div className="flex h-full items-center justify-center bg-[var(--app-bg-base)]">
-            <div className="rounded-3xl border border-[var(--app-border)] bg-[var(--app-bg-elevated)] px-8 py-10 text-center shadow-[var(--app-shadow)]">
-              <div className="text-lg font-semibold text-[var(--app-text-base)]">
-                {t("omnibox.pending_title")}
-              </div>
-              <div className="mt-2 text-sm text-[var(--app-text-muted)]">
-                {t(`protocols.${activeTab.protocol}`)} ·{" "}
-                {t("omnibox.pending_desc")}
-              </div>
+              {/* 远程服务器面板分支 */}
+              {tab.connection ? (
+                <CrashBoundary
+                  area="Remote Workspace"
+                  resetKey={`${tab.id}:${tab.protocol}:${tab.connection.activeTab}`}
+                >
+                  <ServerView
+                    connection={tab.connection}
+                    onTabChange={(viewTab) =>
+                      updateServerTabActiveView(tab.id, viewTab)
+                    }
+                  />
+                </CrashBoundary>
+              ) : null}
+
+              {/* 未就绪的挂起状态 */}
+              {!tab.connection &&
+              tab.protocol !== "DASHBOARD" &&
+              tab.protocol !== "TERMINAL" ? (
+                <div className="flex h-full items-center justify-center bg-[var(--app-bg-base)]">
+                  <div className="rounded-3xl border border-[var(--app-border)] bg-[var(--app-bg-elevated)] px-8 py-10 text-center shadow-[var(--app-shadow)]">
+                    <div className="text-lg font-semibold text-[var(--app-text-base)]">
+                      {t("omnibox.pending_title")}
+                    </div>
+                    <div className="mt-2 text-sm text-[var(--app-text-muted)]">
+                      {t(`protocols.${tab.protocol}`)} ·{" "}
+                      {t("omnibox.pending_desc")}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
-          </div>
-        ) : null}
+          );
+        })}
       </div>
 
       <FoconnPopover

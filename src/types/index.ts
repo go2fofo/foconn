@@ -1,15 +1,15 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:36:01
- * @LastEditTime: 2026-06-08 13:50:41
+ * @LastEditTime: 2026-06-10 11:45:28
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /foconn/src/types/index.ts
  */
 export * from './vfs';
 
-export type ProtocolType = 'TERMINAL' | 'SSH' | 'SFTP' | 'FTP' | 'TELNET' | 'SERIAL' | 'RDP' | 'VNC' | 'SPICE';
-export type WorkspaceProtocol = 'DASHBOARD' | 'TERMINAL' | 'SSH' | 'SFTP' | 'RDP' | 'VNC';
+export type ProtocolType = 'TERMINAL' | 'DASHBOARD'| 'SSH' | 'SFTP' | 'FTP' | 'TELNET' | 'SERIAL' | 'RDP' | 'VNC' | 'SPICE' ;
+export type WorkspaceProtocol = 'DASHBOARD' | 'TERMINAL' | 'SSH' | 'SFTP' | 'RDP' | 'VNC' ;
 export type QuickConnectProtocol = Exclude<WorkspaceProtocol, 'DASHBOARD' | 'TERMINAL'>;
 export type AuthType = 'PASSWORD' | 'KEYPAIR';
 export type QuickCommandScope = 'LOCAL' | 'REMOTE';
