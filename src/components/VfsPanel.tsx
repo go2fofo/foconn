@@ -55,7 +55,9 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
 
   // 改为函数式惰性初始化，优先从全局快照读取历史路径与状态
   const [localPath, setLocalPath] = useState(() => snapshot?.localPath ?? "/");
-  const [remotePath, setRemotePath] = useState(() => snapshot?.remotePath ?? "/");
+  const [remotePath, setRemotePath] = useState(
+    () => snapshot?.remotePath ?? "/",
+  );
 
   const [localNodes, setLocalNodes] = useState<VfsNode[]>([]);
   const [remoteNodes, setRemoteNodes] = useState<VfsNode[]>([]);
@@ -117,9 +119,9 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
 
   const [localSelected, setLocalSelected] = useState<VfsNode[]>([]);
   const [remoteSelected, setRemoteSelected] = useState<VfsNode[]>([]);
-  const [lastFocusedSide, setLastFocusedSide] = useState<"local" | "remote" | null>(
-    () => snapshot?.lastFocusedSide ?? null,
-  );
+  const [lastFocusedSide, setLastFocusedSide] = useState<
+    "local" | "remote" | null
+  >(() => snapshot?.lastFocusedSide ?? null);
 
   const getSortedNodes = (nodes: VfsNode[], key: SortKey, order: SortOrder) => {
     if (!nodes || nodes.length === 0) return [];
@@ -157,7 +159,8 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
   // -------------------------------------------------------------------
   // 检测重名冲突文件核心逻辑
   // -------------------------------------------------------------------
-  const checkAndStartTransfer = (
+  const checkAndStartTransfer = async (
+    // 改为 async
     direction: "UPLOAD" | "DOWNLOAD",
     entries: VfsTransferEntry[],
   ) => {
@@ -176,11 +179,29 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
         allEntries: entries,
       });
     } else {
-      void startTransfer(direction, entries);
+      try {
+        await withGlobalLoading(
+          async () => {
+            await new Promise((resolve) => setTimeout(resolve, 400));
+            await startTransfer(direction, entries);
+          },
+          {
+            message:
+              direction === "UPLOAD"
+                ? t("loading.starting_upload")
+                : t("loading.starting_download"),
+            detail: direction === "UPLOAD" ? remotePath : localPath,
+          },
+        );
+      } catch (error) {
+        setErrorMessage(String(error));
+      }
     }
   };
 
-  const handleConflictResolve = (action: "OVERWRITE" | "SKIP" | "CANCEL") => {
+  const handleConflictResolve = async (
+    action: "OVERWRITE" | "SKIP" | "CANCEL",
+  ) => {
     if (!conflictDialog) return;
     const { direction, conflicts, allEntries } = conflictDialog;
     setConflictDialog(null);
@@ -191,13 +212,34 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
       const conflictNames = new Set(conflicts.map((c) => c.name));
       const safeEntries = allEntries.filter((e) => !conflictNames.has(e.name));
       if (safeEntries.length > 0) {
-        void startTransfer(direction, safeEntries);
+        try {
+          await withGlobalLoading(() => startTransfer(direction, safeEntries), {
+            message:
+              direction === "UPLOAD"
+                ? t("loading.starting_upload")
+                : t("loading.starting_download"),
+            detail: direction === "UPLOAD" ? remotePath : localPath,
+          });
+        } catch (error) {
+          setErrorMessage(String(error));
+        }
       }
       return;
     }
 
     if (action === "OVERWRITE") {
-      void startTransfer(direction, allEntries);
+      // 🔑 覆盖放行，必须包上 Loading
+      try {
+        await withGlobalLoading(() => startTransfer(direction, allEntries), {
+          message:
+            direction === "UPLOAD"
+              ? t("loading.starting_upload")
+              : t("loading.starting_download"),
+          detail: direction === "UPLOAD" ? remotePath : localPath,
+        });
+      } catch (error) {
+        setErrorMessage(String(error));
+      }
     }
   };
 
@@ -251,7 +293,7 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
       });
     };
 
-    const handleGlobalMouseUp = (e: MouseEvent) => {
+    const handleGlobalMouseUp = async (e: MouseEvent) => {
       if (!draggingPayloadRef.current) return;
 
       const payload = draggingPayloadRef.current;
@@ -278,10 +320,14 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
       if (!payload.nodes || payload.nodes.length === 0) return;
       const validNodes = payload.nodes.filter((entry) => entry.name !== "..");
 
-      if (payload.sourceSide === "local" && insideRemote) {
-        checkAndStartTransfer("UPLOAD", validNodes);
-      } else if (payload.sourceSide === "remote" && insideLocal) {
-        checkAndStartTransfer("DOWNLOAD", validNodes);
+      try {
+        if (payload.sourceSide === "local" && insideRemote) {
+          await checkAndStartTransfer("UPLOAD", validNodes);
+        } else if (payload.sourceSide === "remote" && insideLocal) {
+          await checkAndStartTransfer("DOWNLOAD", validNodes);
+        }
+      } catch (error) {
+        setErrorMessage(String(error));
       }
     };
 
@@ -351,11 +397,23 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
           ) {
             try {
               setErrorMessage(null);
-              const entries = await invoke<VfsTransferEntry[]>(
-                "vfs_describe_local_entries",
-                { paths: payload.paths },
+              await withGlobalLoading(
+                async () => {
+                  const entries = await invoke<VfsTransferEntry[]>(
+                    "vfs_describe_local_entries",
+                    { paths: payload.paths },
+                  );
+                  // 此时 checkAndStartTransfer 已经是 async 函数了，直接 await 顺延状态
+                  await checkAndStartTransfer("UPLOAD", entries);
+                },
+                {
+                  message: t(
+                    "loading.preparing_files",
+                    "正在解析拖入的文件...",
+                  ),
+                  detail: `${payload.paths.length} 个项目`,
+                },
               );
-              checkAndStartTransfer("UPLOAD", entries);
             } catch (error) {
               setErrorMessage(String(error));
             }
@@ -457,11 +515,19 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
   const fetchLocalNodes = async () => {
     setIsLoadingLocal(true);
     try {
-      const nodes = await invoke<VfsNode[]>("vfs_list_dir", {
-        vfsSessionId: "local",
-        path: localPath,
-      });
-      setLocalNodes(nodes);
+      await withGlobalLoading(
+        async () => {
+          const nodes = await invoke<VfsNode[]>("vfs_list_dir", {
+            vfsSessionId: "local",
+            path: localPath,
+          });
+          setLocalNodes(nodes);
+        },
+        {
+          message: t("loading.fetching_local", "正在读取本地目录..."),
+          detail: localPath,
+        },
+      );
     } catch (err) {
       setErrorMessage(String(err));
     } finally {
@@ -473,11 +539,19 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
     if (!vfsSessionId) return;
     setIsLoadingRemote(true);
     try {
-      const nodes = await invoke<VfsNode[]>("vfs_list_dir", {
-        vfsSessionId,
-        path: remotePath,
-      });
-      setRemoteNodes(nodes);
+      await withGlobalLoading(
+        async () => {
+          const nodes = await invoke<VfsNode[]>("vfs_list_dir", {
+            vfsSessionId,
+            path: remotePath,
+          });
+          setRemoteNodes(nodes);
+        },
+        {
+          message: t("loading.fetching_remote", "正在读取远程目录..."),
+          detail: remotePath,
+        },
+      );
     } catch {
       setRemoteNodes([]);
     } finally {
@@ -556,44 +630,33 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
     entries: VfsTransferEntry[],
   ) => {
     if (!vfsSessionId || entries.length === 0) return;
-    try {
-      const taskIds = await withGlobalLoading(
-        () =>
-          invoke<string[]>("vfs_start_transfer", {
-            request: {
-              vfs_session_id: vfsSessionId,
-              direction,
-              local_base_path: localPath,
-              remote_base_path: remotePath,
-              entries: entries.map((e) => ({
-                name: e.name,
-                path: e.path,
-                is_dir: e.is_dir,
-                size: e.size,
-              })),
-            },
-          }),
+
+    // 🔑 注意：这里不需要在内部包 withGlobalLoading 了，让它专注于做业务
+    const taskIds = await invoke<string[]>("vfs_start_transfer", {
+      request: {
+        vfs_session_id: vfsSessionId,
+        direction,
+        local_base_path: localPath,
+        remote_base_path: remotePath,
+        entries: entries.map((e) => ({
+          name: e.name,
+          path: e.path,
+          is_dir: e.is_dir,
+          size: e.size,
+        })),
+      },
+    });
+
+    if (taskIds.length > 0) {
+      setTransferBatches((curr) => [
         {
-          message:
-            direction === "UPLOAD"
-              ? t("loading.starting_upload")
-              : t("loading.starting_download"),
-          detail: direction === "UPLOAD" ? remotePath : localPath,
+          batchId: `${Date.now()}`,
+          taskIds,
+          direction,
+          itemCount: entries.length,
         },
-      );
-      if (taskIds.length > 0) {
-        setTransferBatches((curr) => [
-          {
-            batchId: `${Date.now()}`,
-            taskIds,
-            direction,
-            itemCount: entries.length,
-          },
-          ...curr,
-        ]);
-      }
-    } catch (error) {
-      setErrorMessage(String(error));
+        ...curr,
+      ]);
     }
   };
 
@@ -606,15 +669,22 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
     node: VfsNode,
     nextName: string,
   ) => {
+    // 🔑 把整个业务块（包含改名和重新拉取列表）统统塞进 withGlobalLoading 内部
     try {
-      await invoke("vfs_rename_node", {
-        request: {
-          vfs_session_id: side === "local" ? "local" : vfsSessionId,
-          path: node.path,
-          next_name: nextName,
+      await withGlobalLoading(
+        async () => {
+          await invoke("vfs_rename_node", {
+            request: {
+              vfs_session_id: side === "local" ? "local" : vfsSessionId,
+              path: node.path,
+              next_name: nextName,
+            },
+          });
+          // 🔑 必须在内部 await 刷新，等数据拉回来才算完，这样 Loading 就不会早泄
+          await refreshForSide(side);
         },
-      });
-      await refreshForSide(side);
+        { message: t("loading.renaming", "正在重命名..."), detail: nextName },
+      );
     } catch (e) {
       setErrorMessage(String(e));
     }
@@ -626,15 +696,23 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
   ) => {
     if (!nodes.length) return;
     try {
-      await invoke("vfs_delete_nodes", {
-        request: {
-          vfs_session_id: side === "local" ? "local" : vfsSessionId,
-          paths: nodes.map((n) => n.path),
+      await withGlobalLoading(
+        async () => {
+          await invoke("vfs_delete_nodes", {
+            request: {
+              vfs_session_id: side === "local" ? "local" : vfsSessionId,
+              paths: nodes.map((n) => n.path),
+            },
+          });
+          if (side === "local") setLocalSelected([]);
+          else setRemoteSelected([]);
+          await refreshForSide(side);
         },
-      });
-      if (side === "local") setLocalSelected([]);
-      else setRemoteSelected([]);
-      await refreshForSide(side);
+        {
+          message: t("loading.deleting", "正在删除文件..."),
+          detail: nodes.length === 1 ? nodes[0].name : `${nodes.length} 个项目`,
+        },
+      );
     } catch (e) {
       setErrorMessage(String(e));
     }
@@ -646,14 +724,23 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
     name: string,
   ) => {
     try {
-      await invoke("vfs_create_dir", {
-        request: {
-          vfs_session_id: side === "local" ? "local" : vfsSessionId,
-          parent_path: parent,
-          name,
+      // 🔑 同理，将创建和刷新合为一体，整体卡住 Loading 状态
+      await withGlobalLoading(
+        async () => {
+          await invoke("vfs_create_dir", {
+            request: {
+              vfs_session_id: side === "local" ? "local" : vfsSessionId,
+              parent_path: parent,
+              name,
+            },
+          });
+          await refreshForSide(side);
         },
-      });
-      await refreshForSide(side);
+        {
+          message: t("loading.creating_dir", "正在创建文件夹..."),
+          detail: name,
+        },
+      );
     } catch (e) {
       setErrorMessage(String(e));
     }
@@ -689,8 +776,8 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
           onRemoveFavorite={(fav) =>
             updateLocalFavorites(localFavorites.filter((i) => i !== fav))
           }
-          onPrimaryTransfer={(entries) =>
-            checkAndStartTransfer("UPLOAD", entries)
+          onPrimaryTransfer={async (entries) =>
+            await checkAndStartTransfer("UPLOAD", entries)
           }
           onReceiveTransfer={() => {}}
           onDragStateChange={(payload) => setDraggingPayload(payload)}
@@ -740,8 +827,8 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
           onRemoveFavorite={(fav) =>
             updateRemoteFavorites(remoteFavorites.filter((i) => i !== fav))
           }
-          onPrimaryTransfer={(entries) =>
-            checkAndStartTransfer("DOWNLOAD", entries)
+          onPrimaryTransfer={async (entries) =>
+            await checkAndStartTransfer("DOWNLOAD", entries)
           }
           onReceiveTransfer={() => {}}
           onDragStateChange={(payload) => setDraggingPayload(payload)}
@@ -807,12 +894,13 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  void executeDeleteNodes(
+                onClick={async () => {
+                  setDeleteDialog(null);
+
+                  await executeDeleteNodes(
                     deleteDialog.side,
                     deleteDialog.nodes,
                   );
-                  setDeleteDialog(null);
                 }}
                 className="rounded-[12px] border border-[rgba(255,92,92,0.3)] bg-[rgba(255,92,92,0.12)] px-4 py-2 text-sm text-white transition hover:bg-[rgba(255,92,92,0.18)]"
               >
