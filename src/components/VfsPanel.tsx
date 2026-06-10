@@ -775,11 +775,11 @@ export function VfsPanel({ session, activeTab }: VfsPanelProps) {
         />
       </div>
 
-      <TransferQueueBar
+      {/* <TransferQueueBar
         focusTaskId={focusTaskId}
         recentFilter={queueRecentFilter}
         onRecentFilterChange={setQueueRecentFilter}
-      />
+      /> */}
 
       {/* 确认删除弹框 */}
       {deleteDialog && deleteDialog.nodes.length > 0 ? (

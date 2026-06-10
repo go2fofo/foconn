@@ -52,15 +52,6 @@ interface FileSystemProps {
   hidePermissions?: boolean;
 }
 
-interface RenameDialogState {
-  node: VfsNode;
-  value: string;
-}
-
-interface DeleteDialogState {
-  nodes: VfsNode[];
-}
-
 export function FileSystem({
   title,
   path,
@@ -97,12 +88,6 @@ export function FileSystem({
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
   const [anchorIndex, setAnchorIndex] = useState<number | null>(null);
 
-  const [renameDialog, setRenameDialog] = useState<RenameDialogState | null>(
-    null,
-  );
-  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState | null>(
-    null,
-  );
   const [mkdirName, setMkdirName] = useState("");
   const [isMkdirDialogOpen, setIsMkdirDialogOpen] = useState(false);
 
@@ -240,12 +225,7 @@ export function FileSystem({
         label: t("vfs.rename"),
         disabled: count !== 1,
         action: () => {
-          const target = actionableSelectedNodes[0];
-          if (!target) return;
-          setRenameDialog({
-            node: target,
-            value: target.name,
-          });
+           onDeleteNodes?.(actionableSelectedNodes);
         },
       },
       {
@@ -255,9 +235,7 @@ export function FileSystem({
         disabled: count === 0,
         action: () => {
           if (!count) return;
-          setDeleteDialog({
-            nodes: actionableSelectedNodes,
-          });
+          onDeleteNodes?.(actionableSelectedNodes);
         },
       },
     ];
@@ -589,105 +567,6 @@ export function FileSystem({
           )}
         </div>
       </FoconnContextMenu>
-
-      {/* 弹窗等常规布局 */}
-      {renameDialog ? (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/35 px-4 backdrop-blur-[1px]">
-          <div className="w-full max-w-[420px] rounded-[22px] border border-[var(--app-border-strong)] bg-[var(--app-bg-container)] p-5 shadow-[var(--app-shadow-elevated)]">
-            <div className="text-base font-semibold text-white">
-              {t("vfs.rename")}
-            </div>
-            <div className="mt-2 text-sm text-[var(--app-text-muted)]">
-              {t("context_menu.rename_prompt")}
-            </div>
-            <input
-              autoFocus
-              type="text"
-              value={renameDialog.value}
-              onChange={(event) =>
-                setRenameDialog((current) =>
-                  current ? { ...current, value: event.target.value } : current,
-                )
-              }
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  const nextName = renameDialog.value.trim();
-                  if (nextName && nextName !== renameDialog.node.name) {
-                    onRenameNode?.(renameDialog.node, nextName);
-                    setRenameDialog(null);
-                  }
-                }
-                if (event.key === "Escape") {
-                  setRenameDialog(null);
-                }
-              }}
-              className="mt-4 w-full rounded-[14px] border border-[var(--app-border)] bg-[var(--app-bg-elevated)] px-3 py-2 text-sm text-white outline-none transition focus:border-[var(--app-border-strong)]"
-            />
-            <div className="flex gap-2 justify-end mt-5">
-              <button
-                type="button"
-                onClick={() => setRenameDialog(null)}
-                className="rounded-[12px] border border-[var(--app-border)] px-4 py-2 text-sm text-[var(--app-text-soft)] transition hover:bg-[var(--app-bg-hover)]"
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const nextName = renameDialog.value.trim();
-                  if (!nextName || nextName === renameDialog.node.name) {
-                    return;
-                  }
-                  onRenameNode?.(renameDialog.node, nextName);
-                  setRenameDialog(null);
-                }}
-                className="rounded-[12px] border border-[rgba(68,150,255,0.3)] bg-[rgba(68,150,255,0.14)] px-4 py-2 text-sm text-white transition hover:bg-[rgba(68,150,255,0.2)]"
-              >
-                {t("vfs.rename")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {deleteDialog ? (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/35 px-4 backdrop-blur-[1px]">
-          <div className="w-full max-w-[420px] rounded-[22px] border border-[var(--app-border-strong)] bg-[var(--app-bg-container)] p-5 shadow-[var(--app-shadow-elevated)]">
-            <div className="text-base font-semibold text-white">
-              {t("vfs.delete")}
-            </div>
-            <div className="mt-2 text-sm text-[var(--app-text-muted)]">
-              {deleteDialog.nodes.length === 1
-                ? t("context_menu.delete_confirm_single", {
-                    name: deleteDialog.nodes[0]?.name ?? "",
-                  })
-                : t("context_menu.delete_confirm_multi", {
-                    count: deleteDialog.nodes.length,
-                  })}
-            </div>
-            <div className="flex gap-2 justify-end mt-5">
-              <button
-                type="button"
-                onClick={() => setDeleteDialog(null)}
-                className="rounded-[12px] border border-[var(--app-border)] px-4 py-2 text-sm text-[var(--app-text-soft)] transition hover:bg-[var(--app-bg-hover)]"
-              >
-                {t("common.cancel")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onDeleteNodes?.(deleteDialog.nodes);
-                  setDeleteDialog(null);
-                }}
-                className="rounded-[12px] border border-[rgba(255,92,92,0.3)] bg-[rgba(255,92,92,0.12)] px-4 py-2 text-sm text-white transition hover:bg-[rgba(255,92,92,0.18)]"
-              >
-                {t("vfs.delete")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       {isMkdirDialogOpen ? (
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/35 px-4 backdrop-blur-[1px]">
           <div className="w-full max-w-[420px] rounded-[22px] border border-[var(--app-border-strong)] bg-[var(--app-bg-container)] p-5 shadow-[var(--app-shadow-elevated)]">
