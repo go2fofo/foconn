@@ -23,8 +23,8 @@ interface DeleteDialogState {
 
 interface ConflictDialogState {
   direction: 'UPLOAD' | 'DOWNLOAD';
-  conflicts: VfsNode[]; // 遭遇冲突的重名节点
-  allEntries: VfsTransferEntry[]; // 全量待传输节点
+  conflicts: VfsTransferEntry[]; 
+  allEntries: VfsTransferEntry[];
 }
 
 export function VfsPanel({ session }: VfsPanelProps) {
@@ -44,7 +44,7 @@ export function VfsPanel({ session }: VfsPanelProps) {
   const [isLoadingLocal, setIsLoadingLocal] = useState(false);
   const [isLoadingRemote, setIsLoadingRemote] = useState(false);
   
-  // 🪐 纯指针拖拽核心状态
+  // 纯指针拖拽核心状态
   const [draggingPayload, setDraggingPayload] = useState<{ count: number; sourceSide: 'local' | 'remote'; nodes?: VfsNode[] } | null>(null);
   const draggingPayloadRef = useRef(draggingPayload);
   useEffect(() => { draggingPayloadRef.current = draggingPayload; }, [draggingPayload]);
@@ -117,7 +117,7 @@ export function VfsPanel({ session }: VfsPanelProps) {
     const conflicts = entries.filter((e) => targetNodeNames.has(e.name));
 
     if (conflicts.length > 0) {
-      // 🚨 触发拦截！弹框让用户抉择
+      // 触发拦截！弹框让用户抉择
       setConflictDialog({
         direction,
         conflicts,
@@ -172,7 +172,7 @@ export function VfsPanel({ session }: VfsPanelProps) {
 
       const sourceSide = draggingPayloadRef.current.sourceSide;
 
-      // 🎯 动态计算应该高亮哪一边，以及目标路径
+      // 动态计算应该高亮哪一边，以及目标路径
       let showHighlight = false;
       let isTargetInside = false;
       let currentTargetPath = '';
@@ -449,7 +449,6 @@ export function VfsPanel({ session }: VfsPanelProps) {
         </div>
       ) : null}
 
-      {/* ⚡ 优雅的重复文件冲突解决对话框 */}
       {conflictDialog ? (
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/35 px-4 backdrop-blur-[1px]">
           <div className="w-full max-w-[440px] rounded-[22px] border border-[var(--app-border-strong)] bg-[var(--app-bg-container)] p-5 shadow-[var(--app-shadow-elevated)] animate-in fade-in zoom-in-95 duration-150">
@@ -492,7 +491,6 @@ export function VfsPanel({ session }: VfsPanelProps) {
                 {t("vfs.skip_conflict", "跳过同名")}
               </button>
               
-              {/* 覆盖现有 */}
               <button
                 type="button"
                 onClick={() => handleConflictResolve('OVERWRITE')}
