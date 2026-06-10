@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Foconn Loading</title>
+  <style>
+    /* 抽干所有宿主环境的杂质颜色，强制完全透明 */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      background-color: transparent !important;
+      background: transparent !important;
+      overflow: hidden;
+      display: flex; justify-content: center; align-items: center;
+    }
+
+    /* 🔑 这个容器完全没有背景，仅仅作为淡入调节阀 */
+    .splash-box {
+      width: 260px;
+      height: 260px;
+      background: transparent !important; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      /* 维持后台无缝亮窗的淡入平滑感 */
+      opacity: 0;
+      transition: opacity 0.1s ease-in-out;
+    }
+
+    #lottie-container {
+      width: 240px;
+      height: 240px;
+      background: transparent !important;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js"></script>
+</head>
+<body>
+  <div class="splash-box" id="box">
+    <div id="lottie-container"></div>
+  </div>
+
+  <script>
+  const lottiefiles = [
+    '/public/lottiefiles/5e08b0dd-f863-4b30-9898-2706d509ff9b.json',
+    '/public/lottiefiles/e9d21540-1151-11ee-ab28-633c4d493e79.json'
+  ];
+
+  const randomPath = lottiefiles[Math.floor(Math.random() * lottiefiles.length)];
+
+  const anim = lottie.loadAnimation({
+    container: document.getElementById('lottie-container'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: randomPath
+  });
+
+  anim.addEventListener('DOMLoaded', () => {
+    document.getElementById('box').style.opacity = '1';
+  });
+  </script>
+</body>
+</html>

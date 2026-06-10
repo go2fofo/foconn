@@ -1,77 +1,76 @@
-<!doctype html>
+<!--
+ * @Author: fofo
+ * @Date: 2026-06-10 13:43:26
+ * @LastEditTime: 2026-06-10 13:43:31
+ * @LastEditors: fofo
+ * @Description: 
+ * @FilePath: /foconn/public/index.html
+-->
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Foconn</title>
     <style>
-      /* 闪屏首屏全屏常驻样式 */
+      /* 闪屏/启动加载动画的独立样式，不依赖任何外部 CSS 文件 */
       .foconn-app-loading {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #0d1117; /* 暗色质感背景，防晃眼白屏 */
+        background-color: #141416; /* 匹配你应用的暗色调底色 */
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 999999;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        user-select: none;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
 
-      /* 科技感双环动画容器 */
       .foconn-loading-logo {
-        width: 56px;
-        height: 56px;
-        margin-bottom: 20px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 24px;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      /* 外环：使用你前面代码中的 SSH 经典蓝色 */
+      /* 科技感双环旋转动画 */
       .foconn-loading-spinner {
         position: absolute;
         width: 100%;
         height: 100%;
-        border: 2.5px solid transparent;
-        border-top-color: #4496ff; 
+        border: 3px solid transparent;
+        border-top-color: #4496ff; /* 匹配应用主色调 rgba(68,150,255) */
         border-radius: 50%;
-        animation: foconn-spin 1.0s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+        animation: foconn-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
       }
 
-      /* 内环：使用你前面代码中的 SFTP 经典青绿色 */
       .foconn-loading-spinner::before {
         content: "";
         position: absolute;
         top: 4px; left: 4px; right: 4px; bottom: 4px;
-        border: 2.5px solid transparent;
-        border-top-color: #48bc98; 
+        border: 3px solid transparent;
+        border-top-color: #48bc98; /* 匹配应用辅助色/SFTP色 */
         border-radius: 50%;
-        animation: foconn-spin-reverse 0.7s linear infinite;
+        animation: foconn-spin-reverse 0.6s linear infinite;
       }
 
-      /* 主标题 */
       .foconn-loading-text {
-        font-size: 14px;
-        font-weight: 600;
-        color: #ffffff;
-        letter-spacing: 0.2em;
-        text-indent: 0.2em; /* 撑开居中 */
-        margin-bottom: 6px;
-        text-transform: uppercase;
+        font-size: 15px;
+        font-weight: 500;
+        color: #e4e4e7;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
       }
 
-      /* 副标题描述 */
       .foconn-loading-sub {
-        font-size: 11px;
-        color: #4f5b6e;
-        letter-spacing: 0.02em;
+        font-size: 12px;
+        color: #71717a;
       }
 
       @keyframes foconn-spin {
@@ -85,17 +84,15 @@
       }
     </style>
   </head>
-
   <body>
     <div id="root">
       <div class="foconn-app-loading">
         <div class="foconn-loading-logo">
           <div class="foconn-loading-spinner"></div>
-        </div>
-        <div class="foconn-loading-text">Foconn</div>
-        <div class="foconn-loading-sub">正在进入</div>
+          </div>
+        <div class="foconn-loading-text">FOCONN</div>
+        <div class="foconn-loading-sub">...</div>
       </div>
     </div>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -8,8 +8,9 @@ use std::net::TcpStream;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
-use tauri::{AppHandle, Emitter, LogicalSize, Manager, State, WebviewWindow,Runtime};
+use tauri::{AppHandle, Emitter, LogicalSize, Manager, Runtime, State, WebviewWindow};
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
@@ -195,10 +196,7 @@ fn default_bookmark_group() -> BookmarkGroup {
 }
 
 fn bookmark_storage_path(app: &AppHandle) -> Result<PathBuf, String> {
-    let base_dir = app
-        .path()
-        .app_config_dir()
-        .map_err(|e| e.to_string())?;
+    let base_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
     fs::create_dir_all(&base_dir).map_err(|e| e.to_string())?;
     Ok(base_dir.join("bookmarks.json"))
 }
@@ -227,7 +225,11 @@ fn local_metadata_mode(metadata: &fs::Metadata) -> u32 {
     }
     #[cfg(not(unix))]
     {
-        if metadata.permissions().readonly() { 0o444 } else { 0o644 }
+        if metadata.permissions().readonly() {
+            0o444
+        } else {
+            0o644
+        }
     }
 }
 
@@ -298,7 +300,8 @@ fn open_ssh_session(config: &SessionConfig) -> Result<Ssh2Session, String> {
         .and_then(|auth| auth.username.clone())
         .filter(|username| !username.trim().is_empty())
         .unwrap_or_else(|| "root".into());
-    let tcp = TcpStream::connect((host.as_str(), config.port.unwrap_or(22))).map_err(|e| e.to_string())?;
+    let tcp = TcpStream::connect((host.as_str(), config.port.unwrap_or(22)))
+        .map_err(|e| e.to_string())?;
     tcp.set_read_timeout(Some(std::time::Duration::from_secs(10)))
         .map_err(|e| e.to_string())?;
     tcp.set_write_timeout(Some(std::time::Duration::from_secs(10)))
@@ -368,7 +371,11 @@ fn create_remote_ssh_stream(
     let session = open_ssh_session(&config)?;
     let mut channel = session.channel_session().map_err(|e| e.to_string())?;
     channel
-        .request_pty("xterm-256color", None, Some((cols as u32, rows as u32, 0, 0)))
+        .request_pty(
+            "xterm-256color",
+            None,
+            Some((cols as u32, rows as u32, 0, 0)),
+        )
         .map_err(|e| e.to_string())?;
     channel.shell().map_err(|e| e.to_string())?;
     session.set_blocking(false);
@@ -429,7 +436,9 @@ fn create_remote_ssh_stream(
                         Ok(_) => {
                             let _ = channel.flush();
                         }
-                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => remaining.push(payload),
+                        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                            remaining.push(payload)
+                        }
                         Err(error) => {
                             report_debug_event(
                                 "D",
@@ -568,7 +577,10 @@ fn list_local_dir(path: &str) -> Result<Vec<VfsNode>, String> {
             name: entry.file_name().to_string_lossy().into_owned(),
             path: entry.path().to_string_lossy().into_owned(),
             is_dir: metadata.is_dir(),
-            is_symlink: entry.file_type().map(|kind| kind.is_symlink()).unwrap_or(false),
+            is_symlink: entry
+                .file_type()
+                .map(|kind| kind.is_symlink())
+                .unwrap_or(false),
             size: metadata.len(),
             mtime: modified,
             permissions: file_mode_to_permissions(mode),
@@ -597,7 +609,11 @@ fn read_remote_dir(sftp: &Sftp, path: &str) -> Result<Vec<VfsNode>, String> {
             .into_owned();
         nodes.push(VfsNode {
             name: "..".into(),
-            path: if parent.is_empty() { "/".into() } else { parent },
+            path: if parent.is_empty() {
+                "/".into()
+            } else {
+                parent
+            },
             is_dir: true,
             is_symlink: false,
             size: 0,
@@ -608,7 +624,9 @@ fn read_remote_dir(sftp: &Sftp, path: &str) -> Result<Vec<VfsNode>, String> {
         });
     }
 
-    let remote_entries = sftp.readdir(Path::new(&normalized_path)).map_err(|e| e.to_string())?;
+    let remote_entries = sftp
+        .readdir(Path::new(&normalized_path))
+        .map_err(|e| e.to_string())?;
     for (entry_path, stat) in remote_entries {
         let name = entry_path
             .file_name()
@@ -702,7 +720,10 @@ fn create_remote_dir_if_missing(sftp: &Sftp, path: &Path) -> Result<(), String> 
             if stat_is_dir(&stat) {
                 Ok(())
             } else {
-                Err(format!("Remote path is not a directory: {}", path.display()))
+                Err(format!(
+                    "Remote path is not a directory: {}",
+                    path.display()
+                ))
             }
         }
         Err(_) => sftp.mkdir(path, 0o755).map_err(|e| e.to_string()),
@@ -757,7 +778,9 @@ fn copy_local_file_to_remote(
         if read == 0 {
             break;
         }
-        target.write_all(&buffer[..read]).map_err(|e| e.to_string())?;
+        target
+            .write_all(&buffer[..read])
+            .map_err(|e| e.to_string())?;
         *transferred = transferred.saturating_add(read as u64);
         update_transfer_progress_bytes(task, *transferred, total, started_at);
     }
@@ -795,7 +818,15 @@ fn upload_path_recursive(
         }
         Ok(())
     } else {
-        copy_local_file_to_remote(task, sftp, local_path, remote_path, transferred, total, started_at)
+        copy_local_file_to_remote(
+            task,
+            sftp,
+            local_path,
+            remote_path,
+            transferred,
+            total,
+            started_at,
+        )
     }
 }
 
@@ -821,7 +852,9 @@ fn copy_remote_file_to_local(
         if read == 0 {
             break;
         }
-        target.write_all(&buffer[..read]).map_err(|e| e.to_string())?;
+        target
+            .write_all(&buffer[..read])
+            .map_err(|e| e.to_string())?;
         *transferred = transferred.saturating_add(read as u64);
         update_transfer_progress_bytes(task, *transferred, total, started_at);
     }
@@ -863,7 +896,15 @@ fn download_path_recursive(
         }
         Ok(())
     } else {
-        copy_remote_file_to_local(task, sftp, remote_path, local_path, transferred, total, started_at)
+        copy_remote_file_to_local(
+            task,
+            sftp,
+            remote_path,
+            local_path,
+            transferred,
+            total,
+            started_at,
+        )
     }
 }
 
@@ -955,7 +996,12 @@ fn mark_transfer_completed(task: &Arc<Mutex<TransferTaskState>>) {
     });
 }
 
-fn run_upload_task(task: Arc<Mutex<TransferTaskState>>, config: SessionConfig, local_path: String, remote_path: String) -> Result<(), String> {
+fn run_upload_task(
+    task: Arc<Mutex<TransferTaskState>>,
+    config: SessionConfig,
+    local_path: String,
+    remote_path: String,
+) -> Result<(), String> {
     let ssh_session = open_ssh_session(&config)?;
     let sftp = ssh_session.sftp().map_err(|e| e.to_string())?;
     let total = compute_local_total_size(Path::new(&local_path))?;
@@ -981,7 +1027,13 @@ fn run_upload_task(task: Arc<Mutex<TransferTaskState>>, config: SessionConfig, l
     Ok(())
 }
 
-fn run_download_task(task: Arc<Mutex<TransferTaskState>>, config: SessionConfig, remote_path: String, local_path: String, expected_size: u64) -> Result<(), String> {
+fn run_download_task(
+    task: Arc<Mutex<TransferTaskState>>,
+    config: SessionConfig,
+    remote_path: String,
+    local_path: String,
+    expected_size: u64,
+) -> Result<(), String> {
     let ssh_session = open_ssh_session(&config)?;
     let sftp = ssh_session.sftp().map_err(|e| e.to_string())?;
     let total = compute_remote_total_size(&sftp, Path::new(&remote_path)).unwrap_or(expected_size);
@@ -1018,7 +1070,9 @@ fn spawn_transfer_task(
     std::thread::spawn(move || {
         let result = match direction.as_str() {
             "UPLOAD" => run_upload_task(task.clone(), config, local_path, remote_path),
-            "DOWNLOAD" => run_download_task(task.clone(), config, remote_path, local_path, expected_size),
+            "DOWNLOAD" => {
+                run_download_task(task.clone(), config, remote_path, local_path, expected_size)
+            }
             _ => Err("Unsupported transfer direction".into()),
         };
 
@@ -1082,7 +1136,10 @@ fn resize_main_window(window: &WebviewWindow) -> Result<(), String> {
     let monitor_size = monitor.size().to_logical::<f64>(scale_factor);
 
     window
-        .set_size(LogicalSize::new(monitor_size.width * 0.8, monitor_size.height * 0.8))
+        .set_size(LogicalSize::new(
+            monitor_size.width * 0.8,
+            monitor_size.height * 0.8,
+        ))
         .map_err(|e| e.to_string())?;
     window.center().map_err(|e| e.to_string())?;
     Ok(())
@@ -1131,7 +1188,8 @@ fn load_bookmark_storage(app: &AppHandle) -> Result<BookmarkStorage, String> {
     }
 
     let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;
-    let mut storage = serde_json::from_str::<BookmarkStorage>(&contents).map_err(|e| e.to_string())?;
+    let mut storage =
+        serde_json::from_str::<BookmarkStorage>(&contents).map_err(|e| e.to_string())?;
     if !storage.groups.iter().any(|group| group.id == "default") {
         storage.groups.insert(0, default_bookmark_group());
     }
@@ -1170,7 +1228,10 @@ async fn get_quick_commands(app: AppHandle) -> Result<Vec<QuickCommandItem>, Str
 }
 
 #[tauri::command]
-async fn save_quick_command(app: AppHandle, mut command: QuickCommandItem) -> Result<String, String> {
+async fn save_quick_command(
+    app: AppHandle,
+    mut command: QuickCommandItem,
+) -> Result<String, String> {
     if command.title.trim().is_empty() {
         return Err("Quick command title is required".into());
     }
@@ -1211,7 +1272,11 @@ async fn delete_quick_command(app: AppHandle, command_id: String) -> Result<(), 
 }
 
 #[tauri::command]
-async fn rename_bookmark_group(app: AppHandle, group_id: String, name: String) -> Result<(), String> {
+async fn rename_bookmark_group(
+    app: AppHandle,
+    group_id: String,
+    name: String,
+) -> Result<(), String> {
     let trimmed_name = name.trim();
     if trimmed_name.is_empty() {
         return Err("Group name is required".into());
@@ -1247,7 +1312,11 @@ async fn delete_bookmark_group(app: AppHandle, group_id: String) -> Result<(), S
         return Err("System bookmark groups cannot be deleted".into());
     }
 
-    if storage.sessions.iter().any(|item| item.group_id == group_id) {
+    if storage
+        .sessions
+        .iter()
+        .any(|item| item.group_id == group_id)
+    {
         return Err("Cannot delete a bookmark group that still contains sessions".into());
     }
 
@@ -1306,7 +1375,14 @@ async fn create_term_stream(
         let wants_password = config
             .auth
             .as_ref()
-            .map(|auth| auth.method == "password" && auth.secret_ref.as_ref().map(|value| !value.is_empty()).unwrap_or(false))
+            .map(|auth| {
+                auth.method == "password"
+                    && auth
+                        .secret_ref
+                        .as_ref()
+                        .map(|value| !value.is_empty())
+                        .unwrap_or(false)
+            })
             .unwrap_or(false);
 
         if wants_password && sshpass_available() {
@@ -1373,29 +1449,27 @@ async fn create_term_stream(
     // #region debug-point B:child-exit-watch
     let runtime_id_for_exit = runtime_id.clone();
     let protocol_for_exit = config.protocol.clone();
-    std::thread::spawn(move || {
-        match child.wait() {
-            Ok(status) => report_debug_event(
-                "B",
-                "src-tauri/src/lib.rs:create_term_stream:child-exit",
-                "ssh child process exited",
-                serde_json::json!({
-                    "runtimeSessionId": runtime_id_for_exit,
-                    "protocol": protocol_for_exit,
-                    "status": format!("{:?}", status),
-                }),
-            ),
-            Err(error) => report_debug_event(
-                "B",
-                "src-tauri/src/lib.rs:create_term_stream:child-exit",
-                "failed to wait child process",
-                serde_json::json!({
-                    "runtimeSessionId": runtime_id_for_exit,
-                    "protocol": protocol_for_exit,
-                    "error": error.to_string(),
-                }),
-            ),
-        }
+    std::thread::spawn(move || match child.wait() {
+        Ok(status) => report_debug_event(
+            "B",
+            "src-tauri/src/lib.rs:create_term_stream:child-exit",
+            "ssh child process exited",
+            serde_json::json!({
+                "runtimeSessionId": runtime_id_for_exit,
+                "protocol": protocol_for_exit,
+                "status": format!("{:?}", status),
+            }),
+        ),
+        Err(error) => report_debug_event(
+            "B",
+            "src-tauri/src/lib.rs:create_term_stream:child-exit",
+            "failed to wait child process",
+            serde_json::json!({
+                "runtimeSessionId": runtime_id_for_exit,
+                "protocol": protocol_for_exit,
+                "error": error.to_string(),
+            }),
+        ),
     });
     // #endregion
 
@@ -1422,7 +1496,7 @@ async fn create_term_stream(
 
     let runtime_id_clone = runtime_id.clone();
     let backlog_for_reader = backlog.clone();
-    
+
     // Spawn reader thread (reads from PTY, sends to frontend)
     std::thread::spawn(move || {
         let mut buf = [0u8; 4096];
@@ -1432,7 +1506,11 @@ async fn create_term_stream(
                 Ok(n) => {
                     let data = buf[..n].to_vec();
                     // #region debug-point C:reader-output
-                    if backlog_for_reader.lock().map(|backlog| backlog.is_empty()).unwrap_or(false) {
+                    if backlog_for_reader
+                        .lock()
+                        .map(|backlog| backlog.is_empty())
+                        .unwrap_or(false)
+                    {
                         report_debug_event(
                             "C",
                             "src-tauri/src/lib.rs:create_term_stream:reader",
@@ -1504,6 +1582,43 @@ async fn toggle_devtools<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
         Err("未能获取到 Foconn 主窗口句柄".to_string())
     }
 }
+// 由 splashscreen.html 触发，意味着 Lottie 已经在暗色画布中渲染成功了
+#[tauri::command]
+async fn show_splashscreen(app: tauri::AppHandle) {
+    if let Some(splash_window) = app.get_webview_window("splashscreen") {
+        splash_window.center().unwrap(); // 瞬间回归居中
+        splash_window.set_focus().unwrap();
+    }
+}
+// 用于关闭闪屏并激活主窗口
+static START_TIME: Mutex<Option<Instant>> = Mutex::new(Option::None);
+// ================= 闪屏控制中心变量配置 =================
+const MIN_SPLASH_DURATION_SECS: u64 = 2;
+#[tauri::command]
+async fn close_splashscreen(app: tauri::AppHandle) {
+    let elapsed = {
+        let lock = START_TIME.lock().unwrap();
+        lock.map(|t| t.elapsed()).unwrap_or(Duration::from_secs(0))
+    };
+
+    // 核心视觉强制锁
+    if elapsed < Duration::from_secs(MIN_SPLASH_DURATION_SECS) {
+        let remaining = Duration::from_secs(MIN_SPLASH_DURATION_SECS) - elapsed;
+        tokio::time::sleep(remaining).await;
+    }
+    // 铁律满足后，优雅平滑地切向主窗口
+    if let Some(main_window) = app.get_webview_window("main") {
+        main_window.show().unwrap();
+
+        // 留出 180ms 显卡硬缓冲，防止主界面突变白屏
+        tokio::time::sleep(Duration::from_millis(180)).await;
+        main_window.set_focus().unwrap();
+
+        if let Some(splash_window) = app.get_webview_window("splashscreen") {
+            splash_window.close().unwrap();
+        }
+    }
+}
 
 #[tauri::command]
 async fn resize_term_stream(
@@ -1567,10 +1682,7 @@ async fn read_term_backlog(
 }
 
 #[tauri::command]
-async fn save_bookmark(
-    app: AppHandle,
-    mut config: SshSessionConfig,
-) -> Result<String, String> {
+async fn save_bookmark(app: AppHandle, mut config: SshSessionConfig) -> Result<String, String> {
     if config.title.trim().is_empty() {
         config.title = config.host.clone();
     }
@@ -1582,7 +1694,11 @@ async fn save_bookmark(
     }
 
     let mut storage = load_bookmark_storage(&app)?;
-    if !storage.groups.iter().any(|group| group.id == config.group_id) {
+    if !storage
+        .groups
+        .iter()
+        .any(|group| group.id == config.group_id)
+    {
         storage.groups.push(BookmarkGroup {
             id: config.group_id.clone(),
             name: config.group_id.clone(),
@@ -1658,10 +1774,7 @@ async fn duplicate_bookmark(app: AppHandle, bookmark_id: String) -> Result<Strin
 }
 
 #[tauri::command]
-async fn vfs_connect(
-    state: State<'_, AppState>,
-    config: SessionConfig,
-) -> Result<String, String> {
+async fn vfs_connect(state: State<'_, AppState>, config: SessionConfig) -> Result<String, String> {
     if config.protocol != "SFTP" {
         return Err("VFS only supports SFTP sessions".into());
     }
@@ -1675,10 +1788,7 @@ async fn vfs_connect(
 }
 
 #[tauri::command]
-async fn vfs_disconnect(
-    state: State<'_, AppState>,
-    vfs_session_id: String,
-) -> Result<(), String> {
+async fn vfs_disconnect(state: State<'_, AppState>, vfs_session_id: String) -> Result<(), String> {
     state
         .vfs_sessions
         .lock()
@@ -1910,7 +2020,10 @@ async fn vfs_get_transfer_tasks(
             .unwrap_or(false)
     });
 
-    let mut list = tasks.values().filter_map(clone_transfer_progress).collect::<Vec<_>>();
+    let mut list = tasks
+        .values()
+        .filter_map(clone_transfer_progress)
+        .collect::<Vec<_>>();
     list.sort_by(|a, b| a.filename.to_lowercase().cmp(&b.filename.to_lowercase()));
     Ok(list)
 }
@@ -1966,6 +2079,18 @@ pub fn run() {
             if let Some(window) = app.get_webview_window("main") {
                 resize_main_window(&window)?;
             }
+            if let Ok(mut lock) = START_TIME.lock() {
+                *lock = Some(Instant::now());
+            }
+
+            let splash_window = app.get_webview_window("splashscreen").unwrap();
+
+            // 憋住 Webview 初始白屏期，150ms 后利落推出全透明 Lottie
+            tauri::async_runtime::spawn(async move {
+                tokio::time::sleep(Duration::from_millis(150)).await;
+                splash_window.show().unwrap();
+                splash_window.set_focus().unwrap();
+            });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -1994,8 +2119,10 @@ pub fn run() {
             vfs_create_dir,
             vfs_get_transfer_tasks,
             vfs_control_task,
-            toggle_devtools
+            toggle_devtools,
+            close_splashscreen,
+            show_splashscreen
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("运行 Tauri 应用程序时出错");
 }

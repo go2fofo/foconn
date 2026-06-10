@@ -3,41 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --app-primary: #55c7c2;
-  --app-info: #5a8cff;
-  --app-success: #46c4a8;
-  --app-warning: #d3a23a;
-  --app-error: #ef4444;
+  /* 🔑 核心蓝绿色（Teal），亮丽且极具科技感 */
+  --app-primary: #00bfa5;
+  --app-info: #00b0ff;
+  --app-success: #10b981;
+  --app-warning: #f59e0b;
+  --app-error: #f43f5e;
   --app-radius: 12px;
-  --app-bg-base: #050505;
-  --app-bg-container: #0c1020;
-  --app-bg-elevated: #0f172a;
-  --app-bg-soft: #111a2f;
-  --app-bg-panel: rgba(12, 16, 32, 0.92);
-  --app-bg-panel-strong: rgba(15, 23, 42, 0.96);
-  --app-bg-input: rgba(15, 23, 42, 0.82);
-  --app-bg-hover: rgba(90, 140, 255, 0.12);
-  --app-bg-hover-strong: rgba(85, 199, 194, 0.12);
-  --app-bg-danger-soft: rgba(239, 68, 68, 0.12);
-  --app-selection-bg: rgba(90, 140, 255, 0.22);
-  --app-border: rgba(90, 140, 255, 0.16);
-  --app-border-strong: rgba(85, 199, 194, 0.24);
-  --app-border-danger: rgba(239, 68, 68, 0.28);
-  --app-text-base: rgba(255, 255, 255, 0.88);
-  --app-text-muted: rgba(255, 255, 255, 0.62);
-  --app-text-soft: rgba(255, 255, 255, 0.42);
-  --app-shadow: 0 24px 80px rgba(3, 6, 16, 0.45);
-  --app-shadow-elevated: 0 32px 120px rgba(3, 6, 16, 0.65);
-  --app-scrollbar-track: rgba(12, 16, 32, 0.72);
-  --app-scrollbar-thumb: linear-gradient(180deg, rgba(90, 140, 255, 0.55), rgba(85, 199, 194, 0.52));
-  --app-scrollbar-thumb-hover: linear-gradient(180deg, rgba(90, 140, 255, 0.78), rgba(85, 199, 194, 0.76));
-  --app-scrollbar-border: rgba(255, 255, 255, 0.05);
+  
+  /* 🔑 基础底色：更换为极深邃的暗蓝绿黑 */
+  --app-bg-base: #070d14;
+  /* 🔑 容器底色：带有高级蓝绿内敛质感的暗色块 */
+  --app-bg-container: #0b1520;
+  /* 悬浮层/下拉菜单底色：采用略微透亮的青灰黑 */
+  --app-bg-elevated: #111e2e;
+  --app-bg-soft: #142436;
+  --app-bg-panel: rgba(11, 21, 32, 0.92);
+  --app-bg-panel-strong: rgba(17, 30, 46, 0.96);
+  --app-bg-input: rgba(17, 30, 46, 0.82);
+  
+  /* 🔑 状态反馈背景：融合蓝绿透明度 */
+  --app-bg-hover: rgba(0, 176, 255, 0.12);
+  --app-bg-hover-strong: rgba(0, 191, 165, 0.12);
+  --app-bg-danger-soft: rgba(244, 63, 94, 0.12);
+  --app-selection-bg: rgba(0, 191, 165, 0.22);
+  
+  /* 🔑 边框线条：微调为暗青半透明，透光感拉满 */
+  --app-border: rgba(0, 176, 255, 0.16);
+  --app-border-strong: rgba(0, 191, 165, 0.24);
+  --app-border-danger: rgba(244, 63, 94, 0.28);
+  
+  /* 基础文字颜色：保持高对比度的清爽白 */
+  --app-text-base: rgba(255, 255, 255, 0.92);
+  --app-text-muted: rgba(255, 255, 255, 0.65);
+  --app-text-soft: rgba(255, 255, 255, 0.45);
+  
+  /* 🔑 阴影基调：融入深海暗青的阴影，避免脏黑 */
+  --app-shadow: 0 24px 80px rgba(3, 8, 14, 0.55);
+  --app-shadow-elevated: 0 32px 120px rgba(3, 8, 14, 0.75);
+  
+  /* 🔑 滚动条适配 */
+  --app-scrollbar-track: rgba(11, 21, 32, 0.72);
+  --app-scrollbar-thumb: linear-gradient(180deg, rgba(0, 176, 255, 0.55), rgba(0, 191, 165, 0.52));
+  --app-scrollbar-thumb-hover: linear-gradient(180deg, rgba(0, 176, 255, 0.78), rgba(0, 191, 165, 0.76));
+  --app-scrollbar-border: rgba(255, 255, 255, 0.04);
+  
+  /* 🔑 顶层宏大光效（Hero Background）：打造完美的暗青色科技感环境光壁纸 */
   --app-hero-bg:
-    radial-gradient(circle at top left, rgba(85, 199, 194, 0.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(90, 140, 255, 0.18), transparent 24%),
-    linear-gradient(180deg, #050505 0%, #0c1020 48%, #0f172a 100%);
-  --app-panel-bg: linear-gradient(180deg, rgba(12, 16, 32, 0.96), rgba(15, 23, 42, 0.96));
-  --app-accent-bg: linear-gradient(135deg, #55c7c2 0%, #5a8cff 100%);
+    radial-gradient(circle at top left, rgba(0, 191, 165, 0.15), transparent 32%),
+    radial-gradient(circle at top right, rgba(0, 176, 255, 0.15), transparent 28%),
+    linear-gradient(180deg, #070d14 0%, #0b1520 50%, #111e2e 100%);
+    
+  --app-panel-bg: linear-gradient(180deg, rgba(11, 21, 32, 0.96), rgba(17, 30, 46, 0.96));
+  /* 🔑 渐变流光：从蓝绿到青蓝的完美极光色丝滑过渡 */
+  --app-accent-bg: linear-gradient(135deg, #00bfa5 0%, #00b0ff 100%);
 }
 
 html, body, #root {
@@ -60,7 +79,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(90, 140, 255, 0.68) rgba(12, 16, 32, 0.38);
+  scrollbar-color: rgba(0, 191, 165, 0.68) rgba(11, 21, 32, 0.38);
 }
 
 *::-webkit-scrollbar {

@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 14:02:59
- * @LastEditTime: 2026-06-10 11:47:02
+ * @LastEditTime: 2026-06-10 14:15:30
  * @LastEditors: fofo
  * @Description: 升级顶层 Tab 切换为 display 显隐控制，彻底解决切换标签页导致终端重新加载的问题
  * @FilePath: /foconn/src/components/WorkspaceLayout.tsx
@@ -20,6 +20,7 @@ import { TabPlusDropdown } from "./TabPlusDropdown";
 import { BookmarkSidebar } from "./BookmarkSidebar";
 import { FoconnFloatingBall } from "./FoconnFloatingBall";
 import { useWorkspaceStore } from "../store/workspaceStore";
+import { invoke } from "@tauri-apps/api/core";
 
 const FLOATING_BALL_HIDDEN_KEY = "foconn:floating-ball-hidden";
 type QuickMenuSource = "floating-ball" | "dashboard";
@@ -77,6 +78,27 @@ export function WorkspaceLayout() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+useEffect(() => {
+    const bootstrapApp = async () => {
+      try {
+        // 1. 默默在后台静悄悄地加载完所有的核心数据流
+        await loadBookmarkTree();
+        await loadQuickCommands();
+
+        // 2. 核心：给所有的前端复杂组件渲染预留 150ms 显卡上色时间
+        setTimeout(() => {
+          // 3. 呼叫 Rust 关闭 Lottie 闪屏，无缝推向主屏幕
+          invoke("close_splashscreen").catch(console.error);
+        }, 150);
+      } catch (err) {
+        console.error("初始化失败:", err);
+        // 保底亮窗
+        invoke("close_splashscreen").catch(console.error);
+      }
+    };
+
+    bootstrapApp();
+  }, [loadBookmarkTree, loadQuickCommands]);
 
   useEffect(() => {
     if (isOmniboxOpen) {
@@ -90,14 +112,15 @@ export function WorkspaceLayout() {
   };
 
   const quickToolMenuItems = useMemo<QuickToolMenuItem[]>(() => {
-    console.log(`🔍 [WorkspaceLayout:85] %c 112111: `,'font-size:14px; background:#26A08F; color:#fff;font-weight: bold;', );
+    console.log(
+      `🔍 [WorkspaceLayout:85] %c 112111: `,
+      "font-size:14px; background:#26A08F; color:#fff;font-weight: bold;",
+    );
     if (!quickToolMenuAnchor) {
       return [];
     }
 
-    const baseItems: QuickToolMenuItem[] = [
-           
-    ];
+    const baseItems: QuickToolMenuItem[] = [];
 
     if (quickToolMenuAnchor.context === "DASHBOARD") {
       baseItems.push(
@@ -268,9 +291,11 @@ export function WorkspaceLayout() {
 
       <div className="overflow-hidden relative flex-1">
         {/* 1. 仪表盘保活渲染 */}
-        <div 
+        <div
           className="w-full h-full"
-          style={{ display: activeTab.protocol === "DASHBOARD" ? "block" : "none" }}
+          style={{
+            display: activeTab.protocol === "DASHBOARD" ? "block" : "none",
+          }}
           onContextMenu={(event) => {
             if (shouldIgnoreDashboardContextMenu(event.target)) {
               return;
@@ -291,9 +316,9 @@ export function WorkspaceLayout() {
         </div>
 
         {/* 2. 遍历渲染所有的独立 Tab 视图，防止多连接以及本地终端相互覆盖 */}
-        {tabs.map((tab:any) => {
+        {tabs.map((tab: any) => {
           const isCurrentActive = tab.id === activeTabId;
-          
+
           if (tab.protocol === "DASHBOARD") return null;
 
           return (

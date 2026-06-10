@@ -10,12 +10,32 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true, 
     "windows": [
       {
         "title": "Foconn",
+        "label": "main",
         "width": 1280,
         "height": 900,
-        "center": true
+        "center": true,
+        "visible": false,
+        "resizable": true,
+        "transparent": true,
+        "backgroundColor": [13, 17, 23, 255]
+      },
+      {
+        "title": "Loading",
+        "label": "splashscreen",
+        "width": 360,
+        "height": 360,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "center": true,
+        "resizable": false,
+        "url": "/splashscreen.html",
+        "visible": false,
+        "backgroundColor": [0, 0, 0, 0]
       }
     ],
     "security": {

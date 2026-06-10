@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-06-08 13:33:05
- * @LastEditTime: 2026-06-09 15:50:59
+ * @LastEditTime: 2026-06-10 14:34:10
  * @LastEditors: fofo
  * @Description: 全量接管底层 WebView 右键，并完美兼容自定义组件右键
  * @FilePath: /foconn/src/main.tsx
@@ -55,16 +55,31 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
-          colorPrimary: "#55c7c2",
-          colorInfo: "#5a8cff",
-          colorSuccess: "#46c4a8",
-          colorWarning: "#d3a23a",
-          colorError: "#ef4444",
+          // 🔑 核心蓝绿色（Teal），亮丽且极具科技感
+          colorPrimary: "#00bfa5", 
+          
+          // 🔑 辅助信息色，调整为偏青的冷蓝色，与蓝绿更搭
+          colorInfo: "#00b0ff", 
+          
+          // 成功状态采用偏翠绿的蓝绿
+          colorSuccess: "#10b981", 
+          
+          // 警告色与错误色微调，使其在暗青色背景下更沉稳
+          colorWarning: "#f59e0b",
+          colorError: "#f43f5e",
           borderRadius: 12,
-          colorBgBase: "#050505",
-          colorBgContainer: "#0c1020",
-          colorBgElevated: "#0f172a",
-          colorTextBase: "rgba(255, 255, 255, 0.88)",
+          
+          // 🔑 基础底色：更换为极深邃的暗蓝绿黑（#070d14）
+          colorBgBase: "#070d14", 
+          
+          // 🔑 容器底色：微调为带有高级蓝绿内敛质感的暗色块（#0b1520）
+          colorBgContainer: "#0b1520", 
+          
+          // 悬浮层/下拉菜单底色：采用略微透亮的青灰黑（#111e2e）
+          colorBgElevated: "#111e2e", 
+          
+          // 基础文字颜色：保持高对比度的清爽白
+          colorTextBase: "rgba(255, 255, 255, 0.92)",
         },
       }}
     >
