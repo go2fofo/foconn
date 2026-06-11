@@ -61,13 +61,105 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
 
             {/* 顶层标题与描述 */}
             <div className="relative z-10">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                {t("home.dashboard")}
-              </span>
-              <h1 className="mt-5 text-4xl font-mono font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 animate-pulse drop-shadow-[0_0_12px_rgba(34,211,238,0.2)]">
-                &gt; Foconn_
-              </h1>
+      
+              {/* Foconn 专属全息极简极客徽标 */}
+              <div className="relative mt-5 h-8 w-full max-w-[240px] select-none">
+                <svg
+                  viewBox="0 0 240 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="overflow-visible w-full h-full"
+                >
+                  <defs>
+                    {/* 核心科技冷光发光滤镜 */}
+                    <filter
+                      id="advanced-glow"
+                      x="-30%"
+                      y="-30%"
+                      width="160%"
+                      height="160%"
+                    >
+                      <feGaussianBlur stdDeviation="2.5" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  {/* 1. 隐藏的背景未来感雷达网格线（极细隐约线条） */}
+                  <g stroke="#1e293b" strokeWidth="0.5" opacity="0.6">
+                    <line x1="0" y1="4" x2="210" y2="4" />
+                    <line x1="0" y1="28" x2="210" y2="28" />
+                  </g>
+
+                  {/* 2. 前置主体：科技流动线框字形层 */}
+                  <g
+                    stroke="url(#foconn-gradient)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="miter"
+                    filter="url(#advanced-glow)"
+                  >
+                    {/* F：上方破型悬空，横线缩进 */}
+                    <path d="M24 6H10V28M10 16H20" />
+
+                    {/* O：利落的切角胶囊圆矩，带 1px 呼吸缺口 */}
+                    <path d="M36 6H48C51 6 53 8 53 11V23C53 26 51 28 48 28H36C33 28 31 26 31 23V11C31 8 33 6 36 6Z" />
+
+                    {/* C：现代主义隐藏折线，右侧开放式开口 */}
+                    <path d="M78 10C76 7 73 6 69 6H64C61 6 59 8 59 11V23C59 26 61 28 64 28H69C73 28 76 27 78 23" />
+
+                    {/* O：第二矩阵对称舱门 */}
+                    <path d="M92 6H104C107 6 109 8 109 11V23C109 26 107 28 104 28H92C89 28 87 26 87 23V11C87 8 89 6 92 6Z" />
+
+                    {/* N：打破常规的单斜跨越线（无左侧垂直立柱，极简风） */}
+                    <path d="M116 28V6L133 28V6" />
+
+                    {/* N：双子呼应立柱 */}
+                    <path d="M141 28V6L158 28V6" />
+                  </g>
+
+                  {/* 3. 科技装饰元素：终端输入下划线光标与定位十字 */}
+                  <g filter="url(#advanced-glow)">
+                    {/* 精准定位小十字 */}
+                    <path
+                      d="M3 16H7M5 14V18"
+                      stroke="#22d3ee"
+                      strokeWidth="1"
+                      opacity="0.4"
+                    />
+
+                    {/* 赛博动态跳动光标 [_] */}
+                    <line
+                      x1="168"
+                      y1="28"
+                      x2="180"
+                      y2="28"
+                      stroke="#22d3ee"
+                      strokeWidth="3"
+                      className="animate-pulse"
+                    />
+                  </g>
+
+                  {/* 渐变定义 */}
+                  <defs>
+                    <linearGradient
+                      id="foconn-gradient"
+                      x1="0"
+                      y1="0"
+                      x2="180"
+                      y2="0"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop offset="0%" stopColor="#ffffff" />
+                      <stop offset="40%" stopColor="#e2e8f0" />
+                      <stop offset="85%" stopColor="#38bdf8" />
+                      <stop offset="100%" stopColor="#22d3ee" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
               <p className="mt-3 text-xs font-normal leading-relaxed text-slate-400">
                 {t("home.shortcut_hint")}
               </p>
