@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useWorkspaceStore } from "../store/workspaceStore";
 import { SshConnectionForm } from "./SshConnectionForm";
 import { Bug } from "lucide-react";
-
 interface HomeProps {
   onOpenLocal: () => void;
   onOpenProtocolTab: (config: {
@@ -29,7 +28,6 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
     () => bookmarkTree.flatMap((group) => group.items),
     [bookmarkTree],
   );
-
   const handleConnect = (config: SshSessionConfig) => {
     onOpenProtocolTab({
       title: config.title.trim() || config.host,
@@ -75,14 +73,13 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
               </p>
             </div>
 
-            {/* 🌟 核心填充：硬核工控状态监视板（已全面汉化） */}
             <div className="my-6 relative z-10 rounded-xl border border-slate-900 bg-slate-950/60 p-4 font-mono text-[11px] text-slate-500 space-y-3 shadow-inner">
               <div className="flex justify-between items-center pb-2 border-b border-slate-900/60">
                 <span className="font-sans font-medium text-slate-400">
                   系统核心运行状态
                 </span>
                 <span className="text-emerald-400 text-[10px] animate-pulse">
-                  ● 运行稳定
+                  运行稳定
                 </span>
               </div>
               <div className="space-y-1.5">
@@ -97,16 +94,6 @@ export function Home({ onOpenLocal, onOpenProtocolTab }: HomeProps) {
                       ? `${history.length} 个通道`
                       : "暂无活跃"}
                   </span>
-                </div>
-                {/* 动态仿真负载条 */}
-                <div className="pt-1">
-                  <div className="flex justify-between text-[10px] text-slate-600 mb-1">
-                    <span>数据通道负载缓冲</span>
-                    <span>12%</span>
-                  </div>
-                  <div className="overflow-hidden w-full h-1 rounded-full bg-slate-900">
-                    <div className="h-full w-[12%] bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full" />
-                  </div>
                 </div>
               </div>
             </div>
